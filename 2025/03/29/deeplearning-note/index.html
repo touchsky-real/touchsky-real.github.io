@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="线性分类器（Linear Classifiers）线性分类器的缺点 解决方法之一：特征变换 损失函数损失函数定量描述模型的好坏，它代表了我们对于模型中参数的偏好。可能有两组参数的损失值相同，仅由数据计算而来的损失函数会认为两者相同。可以在损失函数中加入正则项来体现出人类的先验的对参数的偏好。 优化（Optimization）$$w^{}&#x3D;\operatorname{a r g} \ope">
+<meta property="og:type" content="article">
+<meta property="og:title" content="deeplearning note">
+<meta property="og:url" content="http://example.com/2025/03/29/deeplearning-note/index.html">
+<meta property="og:site_name" content="Touchsky&#39;s blog">
+<meta property="og:description" content="线性分类器（Linear Classifiers）线性分类器的缺点 解决方法之一：特征变换 损失函数损失函数定量描述模型的好坏，它代表了我们对于模型中参数的偏好。可能有两组参数的损失值相同，仅由数据计算而来的损失函数会认为两者相同。可以在损失函数中加入正则项来体现出人类的先验的对参数的偏好。 优化（Optimization）$$w^{}&#x3D;\operatorname{a r g} \ope">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/deeplearning-note/Linear%20Classifiers%20Problem.png">
+<meta property="og:image" content="http://example.com/deeplearning-note/%E7%89%B9%E5%BE%81%E5%8F%98%E6%8D%A2.png">
+<meta property="og:image" content="http://example.com/deeplearning-note/SGDproblem.png">
+<meta property="og:image" content="http://example.com/deeplearning-note/SGDwithMomentum.png">
+<meta property="og:image" content="http://example.com/deeplearning-note/NesterovMomentum.png">
+<meta property="og:image" content="http://example.com/deeplearning-note/image%20Features%20vs%20Neural%20Networks.png">
+<meta property="og:image" content="http://example.com/deeplearning-note/Activation%20Functions.png">
+<meta property="og:image" content="http://example.com/deeplearning-note/Backpropagation.png">
+<meta property="og:image" content="http://example.com/deeplearning-note/Convolutional%20filter.png">
+<meta property="og:image" content="http://example.com/deeplearning-note/generlized%20Convolution%20computation.png">
+<meta property="og:image" content="http://example.com/deeplearning-note/same%20padding.png">
+<meta property="og:image" content="http://example.com/deeplearning-note/convolution%20common%20setting.png">
+<meta property="og:image" content="http://example.com/deeplearning-note/batch%20norm%20in%20train.png">
+<meta property="og:image" content="http://example.com/deeplearning-note/batch%20norm%20in%20train.png">
+<meta property="og:image" content="http://example.com/deeplearning-note/architecture%20choice.png">
+<meta property="article:published_time" content="2025-03-29T12:59:13.000Z">
+<meta property="article:modified_time" content="2025-03-29T13:05:28.182Z">
+<meta property="article:author" content="touchsky">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/deeplearning-note/Linear%20Classifiers%20Problem.png">
+
+<link rel="canonical" href="http://example.com/2025/03/29/deeplearning-note/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>deeplearning note | Touchsky's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Touchsky's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/03/29/deeplearning-note/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="touchsky">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Touchsky's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          deeplearning note
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2025-03-29 20:59:13 / Modified: 21:05:28" itemprop="dateCreated datePublished" datetime="2025-03-29T20:59:13+08:00">2025-03-29</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="线性分类器（Linear-Classifiers）"><a href="#线性分类器（Linear-Classifiers）" class="headerlink" title="线性分类器（Linear Classifiers）"></a>线性分类器（Linear Classifiers）</h1><p>线性分类器的缺点<br><img src="/deeplearning-note/Linear%20Classifiers%20Problem.png" alt="线性分类器的缺点"></p>
+<p>解决方法之一：<strong>特征变换</strong><br><img src="/deeplearning-note/%E7%89%B9%E5%BE%81%E5%8F%98%E6%8D%A2.png" alt="特征变换"></p>
+<h2 id="损失函数"><a href="#损失函数" class="headerlink" title="损失函数"></a>损失函数</h2><p>损失函数定量描述模型的好坏，它代表了我们对于模型中参数的偏好。可能有两组参数的损失值相同，仅由数据计算而来的损失函数会认为两者相同。可以在损失函数中加入正则项来体现出人类的先验的对参数的偏好。</p>
+<h1 id="优化（Optimization）"><a href="#优化（Optimization）" class="headerlink" title="优化（Optimization）"></a>优化（Optimization）</h1><p>$$<br>w^{<em>}&#x3D;\operatorname{a r g} \operatorname</em> {m i n}_{w} L ( w )<br>$$</p>
+<h2 id="SGD"><a href="#SGD" class="headerlink" title="SGD"></a>SGD</h2><p>对 gradient descent 进行 Stochastic 处理，每次迭代时候抽取一批样本而不是用全部样本用于参数更新来降低算力要求。</p>
+<p>$$<br>x_{t+1}&#x3D;x_{t}-\alpha\nabla f ( x_{t} )<br>$$</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> t <span class="keyword">in</span> <span class="built_in">range</span>(num_steps):</span><br><span class="line">    dw = compute_gradient(w)</span><br><span class="line">    w -= learning_rate * dw</span><br></pre></td></tr></table></figure>
+
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p><img src="/deeplearning-note/SGDproblem.png" alt="problem of SGD"></p>
+<h2 id="SGD-with-Momentum"><a href="#SGD-with-Momentum" class="headerlink" title="SGD with Momentum"></a>SGD with Momentum</h2><p>SGD with Momentum 是为了克服 SGD 在收敛的过程中可能会停在 <strong>局部最小值</strong> 或者 <strong>鞍点</strong> 的问题，在这些点处梯度为 0，参数无法继续更新。</p>
+<p>通过给 SGD 一个速度，从而越过<strong>局部最小值</strong> 或者 <strong>鞍点</strong> 可以解决这些问题。</p>
+<p><img src="/deeplearning-note/SGDwithMomentum.png" alt="SGD with Momentum"></p>
+<p>$$<br>\begin{aligned}<br>v_{t+1} &amp;&#x3D; \rho v_{t} + \nabla f ( x_{t} ) \<br>x_{t+1} &amp;&#x3D; x_{t} - \alpha v_{t+1}<br>\end{aligned}<br>$$</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">v = <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> t <span class="keyword">in</span> <span class="built_in">range</span>(num_steps):</span><br><span class="line">    dw = compute_gradient(w)</span><br><span class="line">    v = rho * v + dw</span><br><span class="line">    w -= learning_rate * v</span><br></pre></td></tr></table></figure>
+
+<p>Build up “velocity” as a running mean of gradients. Rho gives”friction”;typically rho&#x3D;0.9 or 0.99</p>
+<p>等价于</p>
+<p>$$<br>\begin{aligned}<br>  v_{t+1} &amp;&#x3D; \rho v_{t}-\alpha\nabla f ( x_{t} ) \<br>  x_{t+1} &amp;&#x3D; x_{t}+v_{t+1}<br>\end{aligned}<br>$$</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">v = <span class="number">0</span>  <span class="comment"># 初始化动量项</span></span><br><span class="line"><span class="keyword">for</span> t <span class="keyword">in</span> <span class="built_in">range</span>(num_steps):  <span class="comment"># 迭代 num_steps 次</span></span><br><span class="line">    dw = compute_gradient(w)  <span class="comment"># 计算当前权重 w 的梯度</span></span><br><span class="line">    v = rho * v - learning_rate * dw  <span class="comment"># 计算新的动量值</span></span><br><span class="line">    w += v  <span class="comment"># 更新权重</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Nesterov-Momentum"><a href="#Nesterov-Momentum" class="headerlink" title="Nesterov Momentum"></a>Nesterov Momentum</h2><p>根据速度向量到达新的点后计算梯度，对这个梯度和原来的速度进行向量和，作为原来的点更新使用的梯度。<br><img src="/deeplearning-note/NesterovMomentum.png" alt="Nesterov Momentum graph"></p>
+<p>$$<br>\begin{array} {l} {v_{t+1}&#x3D;\rho v_{t}-\alpha\nabla f ( x_{t}+\rho v_{t} )} \ {x_{t+1}&#x3D;x_{t}+v_{t+1}} \ \end{array}<br>$$</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">V = <span class="number">0</span>  <span class="comment"># 初始化动量</span></span><br><span class="line"><span class="keyword">for</span> t <span class="keyword">in</span> <span class="built_in">range</span>(num_steps):</span><br><span class="line">    dw = compute_gradient(w)  <span class="comment"># 计算梯度</span></span><br><span class="line">    old_v = V  <span class="comment"># 记录旧的动量</span></span><br><span class="line">    V = rho * V - learning_rate * dw  <span class="comment"># 更新动量</span></span><br><span class="line">    w -= rho * old_v - (<span class="number">1</span> + rho) * V  <span class="comment"># 更新权重</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="AdaGrad-算法（Adaptive-Gradient-Algorithm）"><a href="#AdaGrad-算法（Adaptive-Gradient-Algorithm）" class="headerlink" title="AdaGrad 算法（Adaptive Gradient Algorithm）"></a>AdaGrad 算法（Adaptive Gradient Algorithm）</h2><p>沿着“陡峭”方向的进展受到抑制，而沿着“平坦”方向的进展被加速。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">grad_squared = <span class="number">0</span>  <span class="comment"># 初始化梯度累积项</span></span><br><span class="line"><span class="keyword">for</span> t <span class="keyword">in</span> <span class="built_in">range</span>(num_steps):</span><br><span class="line">    dw = compute_gradient(w)  <span class="comment"># 计算梯度</span></span><br><span class="line">    grad_squared += dw * dw  <span class="comment"># 累积梯度平方</span></span><br><span class="line">    w -= learning_rate * dw / (grad_squared.sqrt() + <span class="number">1e-7</span>)  <span class="comment"># 进行参数更新，避免除零</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>问题：grad_squared 可能会在到达损失函数最低点过大，而使得参数停止更新。<br>解决方法：<strong>RMSProp</strong>。</p>
+<h2 id="RMSProp"><a href="#RMSProp" class="headerlink" title="RMSProp"></a>RMSProp</h2><p>与 AdaGrad 算法相比增加了一个“摩擦”项。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">grad_squared = <span class="number">0</span>  <span class="comment"># 初始化累积梯度平方项</span></span><br><span class="line"><span class="keyword">for</span> t <span class="keyword">in</span> <span class="built_in">range</span>(num_steps):</span><br><span class="line">    dw = compute_gradient(w)  <span class="comment"># 计算梯度</span></span><br><span class="line">    grad_squared = decay_rate * grad_squared + (<span class="number">1</span> - decay_rate) * dw * dw  <span class="comment"># 计算加权移动平均</span></span><br><span class="line">    w -= learning_rate * dw / (grad_squared.sqrt() + <span class="number">1e-7</span>)  <span class="comment"># 更新参数</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="Adam-算法"><a href="#Adam-算法" class="headerlink" title="Adam 算法"></a>Adam 算法</h2><p>结合两个好的 idea: SGD with Momentum + RMSProp &#x3D; Adam<br>但是刚开始的时候梯度可能过大。<br>优化：<strong>偏差修正</strong>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">moment1 = <span class="number">0</span>  <span class="comment"># 一阶矩估计（动量项）</span></span><br><span class="line">moment2 = <span class="number">0</span>  <span class="comment"># 二阶矩估计（梯度平方的指数加权平均）</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> t <span class="keyword">in</span> <span class="built_in">range</span>(num_steps):</span><br><span class="line">    dw = compute_gradient(w)  <span class="comment"># 计算梯度</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 计算一阶矩估计（动量）</span></span><br><span class="line">    moment1 = beta1 * moment1 + (<span class="number">1</span> - beta1) * dw</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 计算二阶矩估计（梯度平方的移动平均）</span></span><br><span class="line">    moment2 = beta2 * moment2 + (<span class="number">1</span> - beta2) * dw * dw</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 计算一阶和二阶矩的偏差修正</span></span><br><span class="line">    moment1_unbias = moment1 / (<span class="number">1</span> - beta1 ** t)</span><br><span class="line">    moment2_unbias = moment2 / (<span class="number">1</span> - beta2 ** t)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 更新参数</span></span><br><span class="line">    w -= learning_rate * moment1_unbias / (moment2_unbias.sqrt() + <span class="number">1e-7</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="经验"><a href="#经验" class="headerlink" title="经验"></a>经验</h3><blockquote>
+<p>Adam with beta1 &#x3D; 0.9<br>beta2 &#x3D; 0.999, and learning rate &#x3D; 1e-3, 5e-4, 1e-4 is a great starting point for many models!</p>
+</blockquote>
+<h1 id="神经网络"><a href="#神经网络" class="headerlink" title="神经网络"></a>神经网络</h1><h2 id="特征变换"><a href="#特征变换" class="headerlink" title="特征变换"></a>特征变换</h2><p>通过对原始的输入特征进行变换，可能就能够处理原来的模型所不能处理的问题。对于图像分类而言，常用的特征变换包括：</p>
+<ul>
+<li>Color Histogram 色彩直方图</li>
+<li>Histogram of Oriented Gradients (HoG) 方向梯度直方图 (HoG)</li>
+<li>Bag of Words 词袋模型 <strong><em>数据驱动的</em></strong></li>
+</ul>
+<p>不同的特征变换可以组合在一起使用。</p>
+<p><img src="/deeplearning-note/image%20Features%20vs%20Neural%20Networks.png" alt="image Features vs Neural Networks"></p>
+<h2 id="端到端的学习"><a href="#端到端的学习" class="headerlink" title="端到端的学习"></a>端到端的学习</h2><p>先进行特征提取再利用模型在提取出的特征上对图像进行分类时候，只会调整模型的参数，而特征提取的部分可能不会提高图片的分类效果。<br>因此，更好的办法是端到端的学习，输入原始数据，输出想要的结果。中间整体地对特征提取和特征处理部分进行训练来提高图像分类效果。</p>
+<h2 id="基础概念"><a href="#基础概念" class="headerlink" title="基础概念"></a>基础概念</h2><p>深度神经网络的层数通常是指网络所含权重矩阵的个数。<br>宽度是隐藏表示的纬度。隐藏表示的纬度通常是一样的。<br>激活函数可以看成两个权重矩阵之间的“三明治”，给予网络额外的表现能力。</p>
+<p>激活函数有多种。<br><img src="/deeplearning-note/Activation%20Functions.png" alt="激活函数的种类"></p>
+<p>通常应该使用某种可调正则化参数的神经网络模型，而不是直接依赖网络本身的大小作为正则化因子。<br>网络大小不一定是最优正则化方式：虽然较大的网络可能更容易过拟合，但仅仅减少参数数量并不总是最佳策略。</p>
+<h2 id="反向传播"><a href="#反向传播" class="headerlink" title="反向传播"></a>反向传播</h2><p><img src="/deeplearning-note/Backpropagation.png" alt="反向传播"><br>pytorch 中模型的计算步骤存储在<strong>计算图</strong>中，每个节点代表一次运算。<br>反向传播中，对于计算图中每个节点来说 downstream gradient &#x3D; upstream gradient * local gradient</p>
+<h1 id="卷积网络"><a href="#卷积网络" class="headerlink" title="卷积网络"></a>卷积网络</h1><p>卷积网络中的权重矩阵一般称为 <strong>卷积核</strong> 或者 <strong>filter</strong>，它的深度一般和输入张量的深度一致，比如说 3。<br>输入张量和卷积核卷积后的结果被称为 <strong>activation map</strong>。<br>一层卷积层可以有多个卷积核，这是一个 可以设置的超参数。<br><img src="/deeplearning-note/Convolutional%20filter.png" alt="卷积操作"></p>
+<p>有两种方式看待卷积后的结果：</p>
+<ol>
+<li>一系列的 feature map 的集合。</li>
+<li>特征向量组成的网格。</li>
+</ol>
+<p>通常对一批图像进行处理。<br><img src="/deeplearning-note/generlized%20Convolution%20computation.png" alt="一般的卷积操作"></p>
+<blockquote>
+<p>一般可以对第一层的参数可视化进行解释。</p>
+</blockquote>
+<h2 id="步幅和填充"><a href="#步幅和填充" class="headerlink" title="步幅和填充"></a>步幅和填充</h2><p>padding: 在图片周围填充来防止图片尺寸缩小<br>特例：<strong>same padding</strong>后图像的大小不会改变<br><img src="/deeplearning-note/same%20padding.png" alt="same padding"></p>
+<p>stride:下采样，防止网络需要很多层卷积才能获取到输入图片的全局信息。<br>除了 conv 中的 stride 可以下采样，池化层也可以下采样。</p>
+<p>卷积通常的参数设置：<br><img src="/deeplearning-note/convolution%20common%20setting.png" alt="卷积通常的参数设置"></p>
+<h2 id="全连接层和-1x1-卷积的区别"><a href="#全连接层和-1x1-卷积的区别" class="headerlink" title="全连接层和 1x1 卷积的区别"></a>全连接层和 1x1 卷积的区别</h2><p>全连接层可以用来破坏空间结构，比如网络最后一层生成分数。<br>1x1 卷积用来调节通道深度。</p>
+<h2 id="归一化"><a href="#归一化" class="headerlink" title="归一化"></a>归一化</h2><p>问题：网络很难训练。解决方法：归一化<br>通常使用 <strong>批量归一化</strong> ，使得每一层的输出符合均值为 0，方差为 1 的分布。<br>批量归一化训练和推理时行为不一致。<br>训练时：<br><img src="/deeplearning-note/batch%20norm%20in%20train.png" alt="批量归一化"><br>推理时：<br><img src="/deeplearning-note/batch%20norm%20in%20train.png" alt="批量归一化"></p>
+<p><strong>批量归一化</strong> 中一个批次的样本之间相互影响，<strong>层归一化</strong>可以避免这一问题。</p>
+<h2 id="VGG-net"><a href="#VGG-net" class="headerlink" title="VGG net"></a>VGG net</h2><p>两个 3x3 的卷积比单个 5x5 的卷积在参数、浮点计算更低的情况下效果可能会更好。<br>用卷积 stage 替换卷积层。每个 stage 里有多个卷积。<br>通过减半空间大小和把通道数翻倍，保持每个卷积 stage 中浮点计算次数差不多。</p>
+<blockquote>
+<p>下采样：任何能够减少输入的空间尺寸的操作</p>
+</blockquote>
+<p>在实际应用中，不应该自己设计新的网络架构，而是应该在现有好的网络基础上修改。<br><img src="/deeplearning-note/architecture%20choice.png" alt="网络选择"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/09/09/hello-world/" rel="prev" title="Hello World">
+      <i class="fa fa-chevron-left"></i> Hello World
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E5%88%86%E7%B1%BB%E5%99%A8%EF%BC%88Linear-Classifiers%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">线性分类器（Linear Classifiers）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0"><span class="nav-number">1.1.</span> <span class="nav-text">损失函数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BC%98%E5%8C%96%EF%BC%88Optimization%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">优化（Optimization）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#SGD"><span class="nav-number">2.1.</span> <span class="nav-text">SGD</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%AE%E9%A2%98"><span class="nav-number">2.1.1.</span> <span class="nav-text">问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SGD-with-Momentum"><span class="nav-number">2.2.</span> <span class="nav-text">SGD with Momentum</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nesterov-Momentum"><span class="nav-number">2.3.</span> <span class="nav-text">Nesterov Momentum</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AdaGrad-%E7%AE%97%E6%B3%95%EF%BC%88Adaptive-Gradient-Algorithm%EF%BC%89"><span class="nav-number">2.4.</span> <span class="nav-text">AdaGrad 算法（Adaptive Gradient Algorithm）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RMSProp"><span class="nav-number">2.5.</span> <span class="nav-text">RMSProp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Adam-%E7%AE%97%E6%B3%95"><span class="nav-number">2.6.</span> <span class="nav-text">Adam 算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%8F%E9%AA%8C"><span class="nav-number">2.6.1.</span> <span class="nav-text">经验</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="nav-number">3.</span> <span class="nav-text">神经网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E5%BE%81%E5%8F%98%E6%8D%A2"><span class="nav-number">3.1.</span> <span class="nav-text">特征变换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AB%AF%E5%88%B0%E7%AB%AF%E7%9A%84%E5%AD%A6%E4%B9%A0"><span class="nav-number">3.2.</span> <span class="nav-text">端到端的学习</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span class="nav-number">3.3.</span> <span class="nav-text">基础概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD"><span class="nav-number">3.4.</span> <span class="nav-text">反向传播</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%B7%E7%A7%AF%E7%BD%91%E7%BB%9C"><span class="nav-number">4.</span> <span class="nav-text">卷积网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A5%E5%B9%85%E5%92%8C%E5%A1%AB%E5%85%85"><span class="nav-number">4.1.</span> <span class="nav-text">步幅和填充</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E8%BF%9E%E6%8E%A5%E5%B1%82%E5%92%8C-1x1-%E5%8D%B7%E7%A7%AF%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">4.2.</span> <span class="nav-text">全连接层和 1x1 卷积的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%92%E4%B8%80%E5%8C%96"><span class="nav-number">4.3.</span> <span class="nav-text">归一化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#VGG-net"><span class="nav-number">4.4.</span> <span class="nav-text">VGG net</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">touchsky</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">touchsky</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
