@@ -70,7 +70,6 @@ Build up "velocity" as a running mean of gradients. Rho gives"friction";typicall
 $$
 \begin{aligned}
   v_{t+1} &= \rho v_{t}-\alpha\nabla f ( x_{t} ) \\
-  \\
   x_{t+1} &= x_{t}+v_{t+1}
 \end{aligned}
 $$
