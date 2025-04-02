@@ -42,8 +42,17 @@
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note/batch%20norm%20in%20train.png">
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note/batch%20norm%20in%20test.png">
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note/architecture%20choice.png">
+<meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note/staticvsdynamicop.png">
+<meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note/staticvsdynamicse.png">
+<meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note/staticvsdynamicde.png">
+<meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note/pytorchabstractionlevel.png">
+<meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note/pytorchcodeexample.png">
+<meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note/customizemodule.png">
+<meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note/pretrainedmodels.png">
+<meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note/dynamicgraphpro.png">
+<meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note/staticgraphinpytorch.png">
 <meta property="article:published_time" content="2025-03-29T12:59:13.000Z">
-<meta property="article:modified_time" content="2025-03-30T05:08:13.529Z">
+<meta property="article:modified_time" content="2025-04-02T02:18:08.517Z">
 <meta property="article:author" content="touchsky">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://example.com/2025/03/29/deeplearning-note/Linear%20Classifiers%20Problem.png">
@@ -200,7 +209,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2025-03-30 13:08:13" itemprop="dateModified" datetime="2025-03-30T13:08:13+08:00">2025-03-30</time>
+                <time title="Modified: 2025-04-02 10:18:08" itemprop="dateModified" datetime="2025-04-02T10:18:08+08:00">2025-04-02</time>
               </span>
 
           
@@ -297,7 +306,8 @@ beta2 = 0.999, and learning rate = 1e-3, 5e-4, 1e-4 is a great starting point fo
 <h2 id="反向传播"><a class="markdownIt-Anchor" href="#反向传播"></a> 反向传播</h2>
 <p><img src="/2025/03/29/deeplearning-note/Backpropagation.png" alt="反向传播" /><br />
 pytorch 中模型的计算步骤存储在<strong>计算图</strong>中，每个节点代表一次运算。<br />
-反向传播中，对于计算图中每个节点来说 downstream gradient = upstream gradient * local gradient</p>
+反向传播中，对于计算图中每个节点来说 downstream gradient = upstream gradient * local gradient<br />
+在代码中：正向传播与反向传播的代码通常一一对应，但是顺序相反。</p>
 <h1 id="卷积网络"><a class="markdownIt-Anchor" href="#卷积网络"></a> 卷积网络</h1>
 <p>卷积网络中的权重矩阵一般称为 <strong>卷积核</strong> 或者 <strong>filter</strong>，它的深度一般和输入张量的深度一致，比如说 3。<br />
 输入张量和卷积核卷积后的结果被称为 <strong>activation map</strong>。<br />
@@ -340,8 +350,42 @@ pytorch 中模型的计算步骤存储在<strong>计算图</strong>中，每个�
 <blockquote>
 <p>下采样：任何能够减少输入的空间尺寸的操作</p>
 </blockquote>
-<p>在实际应用中，不应该自己设计新的网络架构，而是应该在现有好的网络基础上修改。<br />
+<p>Tips: 在实际应用中，不应该自己设计新的网络架构，而是应该在现有好的网络基础上修改。<br />
 <img src="/2025/03/29/deeplearning-note/architecture%20choice.png" alt="网络选择" /></p>
+<h2 id="框架"><a class="markdownIt-Anchor" href="#框架"></a> 框架</h2>
+<h3 id="静态计算图与动态计算图"><a class="markdownIt-Anchor" href="#静态计算图与动态计算图"></a> 静态计算图与动态计算图</h3>
+<p>静态计算图构建好后不会改变，动态计算图在每次前向传播中会构建新的计算图。</p>
+<h4 id="区别"><a class="markdownIt-Anchor" href="#区别"></a> 区别</h4>
+<p>优化区别<br />
+<img src="/2025/03/29/deeplearning-note/staticvsdynamicop.png" alt="静态动态优化区别" /><br />
+序列化区别<br />
+<img src="/2025/03/29/deeplearning-note/staticvsdynamicse.png" alt="静态动态序列化区别" /><br />
+调试区别<br />
+<img src="/2025/03/29/deeplearning-note/staticvsdynamicde.png" alt="静态动态调试区别" /></p>
+<h3 id="pytorch"><a class="markdownIt-Anchor" href="#pytorch"></a> Pytorch</h3>
+<p>Pytoch 有三个抽象层次：</p>
+<ul>
+<li>张量</li>
+<li>自动微分</li>
+<li>模块</li>
+</ul>
+<p><img src="/2025/03/29/deeplearning-note/pytorchabstractionlevel.png" alt="pytorch抽象层次" /></p>
+<p>代码实例：<br />
+<img src="/2025/03/29/deeplearning-note/pytorchcodeexample.png" alt="pytorch代码实例" /></p>
+<p><code>with torch.no_grad():</code>告诉 pytoch 不要为上下文管理器中的操作构建计算图，通常<strong>梯度更新</strong>和<strong>置零</strong>不需要反向传播来计算梯度。</p>
+<p>通过继承 nn.module 可以很方便地自定义网络。<br />
+<img src="/2025/03/29/deeplearning-note/customizemodule.png" alt="自定义网络" /></p>
+<p>pytorch 可以很方便地下载并使用预训练好的模型，通常 resnet 效果不错。<br />
+<img src="/2025/03/29/deeplearning-note/pretrainedmodels.png" alt="预训练好的模型" /></p>
+<p>pytorch 默认使用动态计算图。动态计算图使你可以在前向传播中使用控制语句，比如根据 loss 的不同选择为一个线性层选择不同的权重矩阵。<br />
+<img src="/2025/03/29/deeplearning-note/dynamicgraphpro.png" alt="动态图优点" /></p>
+<p>pytorch 可以使用静态图（也可以使用装饰器装饰 model 函数）。<br />
+<img src="/2025/03/29/deeplearning-note/staticgraphinpytorch.png" alt="pytorch静态图" /></p>
+<p>Pytoch 的张量操作中有任何一个输入张量的<code>require_grads</code>属性为<code>True</code>，pytorch 会为这个操作构建一部分计算图，并且操作的输出张量中<code>require_grads</code>属性也被 pytorch 设置为<code>True</code>。</p>
+<h3 id="tensorflow"><a class="markdownIt-Anchor" href="#tensorflow"></a> TensorFlow</h3>
+<p><code>TensorFlow1.0</code>主要用静态计算图，<code>TensorFlow2.0</code>主要用动态计算图。</p>
+<p>TensorFlow 中的<code>keras</code>类似于 pytoch 中的 nn 模块，提供模块级别的抽象。</p>
+<p>TensorFlow 中的<code>tensorboard</code>很好用，是一个用来追踪网络统计信息的<code>web server</code>，pytorch 在<code>torch.utils.tensorboard</code>也提供了对 tensorboard 的支持。</p>
 
     </div>
 
@@ -419,7 +463,7 @@ pytorch 中模型的计算步骤存储在<strong>计算图</strong>中，每个�
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E5%88%86%E7%B1%BB%E5%99%A8linear-classifiers"><span class="nav-number">1.</span> <span class="nav-text"> 线性分类器（Linear Classifiers）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0"><span class="nav-number">1.1.</span> <span class="nav-text"> 损失函数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BC%98%E5%8C%96optimization"><span class="nav-number">2.</span> <span class="nav-text"> 优化（Optimization）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#sgd"><span class="nav-number">2.1.</span> <span class="nav-text"> SGD</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%AE%E9%A2%98"><span class="nav-number">2.1.1.</span> <span class="nav-text"> 问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sgd-with-momentum"><span class="nav-number">2.2.</span> <span class="nav-text"> SGD with Momentum</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nesterov-momentum"><span class="nav-number">2.3.</span> <span class="nav-text"> Nesterov Momentum</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#adagrad-%E7%AE%97%E6%B3%95adaptive-gradient-algorithm"><span class="nav-number">2.4.</span> <span class="nav-text"> AdaGrad 算法（Adaptive Gradient Algorithm）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rmsprop"><span class="nav-number">2.5.</span> <span class="nav-text"> RMSProp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#adam-%E7%AE%97%E6%B3%95"><span class="nav-number">2.6.</span> <span class="nav-text"> Adam 算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%8F%E9%AA%8C"><span class="nav-number">2.6.1.</span> <span class="nav-text"> 经验</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="nav-number">3.</span> <span class="nav-text"> 神经网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E5%BE%81%E5%8F%98%E6%8D%A2"><span class="nav-number">3.1.</span> <span class="nav-text"> 特征变换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AB%AF%E5%88%B0%E7%AB%AF%E7%9A%84%E5%AD%A6%E4%B9%A0"><span class="nav-number">3.2.</span> <span class="nav-text"> 端到端的学习</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span class="nav-number">3.3.</span> <span class="nav-text"> 基础概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD"><span class="nav-number">3.4.</span> <span class="nav-text"> 反向传播</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%B7%E7%A7%AF%E7%BD%91%E7%BB%9C"><span class="nav-number">4.</span> <span class="nav-text"> 卷积网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A5%E5%B9%85%E5%92%8C%E5%A1%AB%E5%85%85"><span class="nav-number">4.1.</span> <span class="nav-text"> 步幅和填充</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E8%BF%9E%E6%8E%A5%E5%B1%82%E5%92%8C-1x1-%E5%8D%B7%E7%A7%AF%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">4.2.</span> <span class="nav-text"> 全连接层和 1x1 卷积的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%92%E4%B8%80%E5%8C%96"><span class="nav-number">4.3.</span> <span class="nav-text"> 归一化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#vgg-net"><span class="nav-number">4.4.</span> <span class="nav-text"> VGG net</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E5%88%86%E7%B1%BB%E5%99%A8linear-classifiers"><span class="nav-number">1.</span> <span class="nav-text"> 线性分类器（Linear Classifiers）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0"><span class="nav-number">1.1.</span> <span class="nav-text"> 损失函数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BC%98%E5%8C%96optimization"><span class="nav-number">2.</span> <span class="nav-text"> 优化（Optimization）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#sgd"><span class="nav-number">2.1.</span> <span class="nav-text"> SGD</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%AE%E9%A2%98"><span class="nav-number">2.1.1.</span> <span class="nav-text"> 问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sgd-with-momentum"><span class="nav-number">2.2.</span> <span class="nav-text"> SGD with Momentum</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nesterov-momentum"><span class="nav-number">2.3.</span> <span class="nav-text"> Nesterov Momentum</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#adagrad-%E7%AE%97%E6%B3%95adaptive-gradient-algorithm"><span class="nav-number">2.4.</span> <span class="nav-text"> AdaGrad 算法（Adaptive Gradient Algorithm）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rmsprop"><span class="nav-number">2.5.</span> <span class="nav-text"> RMSProp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#adam-%E7%AE%97%E6%B3%95"><span class="nav-number">2.6.</span> <span class="nav-text"> Adam 算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%8F%E9%AA%8C"><span class="nav-number">2.6.1.</span> <span class="nav-text"> 经验</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="nav-number">3.</span> <span class="nav-text"> 神经网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E5%BE%81%E5%8F%98%E6%8D%A2"><span class="nav-number">3.1.</span> <span class="nav-text"> 特征变换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AB%AF%E5%88%B0%E7%AB%AF%E7%9A%84%E5%AD%A6%E4%B9%A0"><span class="nav-number">3.2.</span> <span class="nav-text"> 端到端的学习</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span class="nav-number">3.3.</span> <span class="nav-text"> 基础概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD"><span class="nav-number">3.4.</span> <span class="nav-text"> 反向传播</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%B7%E7%A7%AF%E7%BD%91%E7%BB%9C"><span class="nav-number">4.</span> <span class="nav-text"> 卷积网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A5%E5%B9%85%E5%92%8C%E5%A1%AB%E5%85%85"><span class="nav-number">4.1.</span> <span class="nav-text"> 步幅和填充</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E8%BF%9E%E6%8E%A5%E5%B1%82%E5%92%8C-1x1-%E5%8D%B7%E7%A7%AF%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">4.2.</span> <span class="nav-text"> 全连接层和 1x1 卷积的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%92%E4%B8%80%E5%8C%96"><span class="nav-number">4.3.</span> <span class="nav-text"> 归一化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#vgg-net"><span class="nav-number">4.4.</span> <span class="nav-text"> VGG net</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A1%86%E6%9E%B6"><span class="nav-number">4.5.</span> <span class="nav-text"> 框架</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E8%AE%A1%E7%AE%97%E5%9B%BE%E4%B8%8E%E5%8A%A8%E6%80%81%E8%AE%A1%E7%AE%97%E5%9B%BE"><span class="nav-number">4.5.1.</span> <span class="nav-text"> 静态计算图与动态计算图</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8C%BA%E5%88%AB"><span class="nav-number">4.5.1.1.</span> <span class="nav-text"> 区别</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pytorch"><span class="nav-number">4.5.2.</span> <span class="nav-text"> Pytorch</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tensorflow"><span class="nav-number">4.5.3.</span> <span class="nav-text"> TensorFlow</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
