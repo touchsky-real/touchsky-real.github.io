@@ -180,7 +180,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2025-04-02 10:18:08" itemprop="dateModified" datetime="2025-04-02T10:18:08+08:00">2025-04-02</time>
+                <time title="Modified: 2025-04-02 10:24:15" itemprop="dateModified" datetime="2025-04-02T10:24:15+08:00">2025-04-02</time>
               </span>
 
           
@@ -323,17 +323,17 @@ pytorch 中模型的计算步骤存储在<strong>计算图</strong>中，每个�
 </blockquote>
 <p>Tips: 在实际应用中，不应该自己设计新的网络架构，而是应该在现有好的网络基础上修改。<br />
 <img src="/2025/03/29/deeplearning-note/architecture%20choice.png" alt="网络选择" /></p>
-<h2 id="框架"><a class="markdownIt-Anchor" href="#框架"></a> 框架</h2>
-<h3 id="静态计算图与动态计算图"><a class="markdownIt-Anchor" href="#静态计算图与动态计算图"></a> 静态计算图与动态计算图</h3>
+<h1 id="框架"><a class="markdownIt-Anchor" href="#框架"></a> 框架</h1>
+<h2 id="静态计算图与动态计算图"><a class="markdownIt-Anchor" href="#静态计算图与动态计算图"></a> 静态计算图与动态计算图</h2>
 <p>静态计算图构建好后不会改变，动态计算图在每次前向传播中会构建新的计算图。</p>
-<h4 id="区别"><a class="markdownIt-Anchor" href="#区别"></a> 区别</h4>
+<h3 id="区别"><a class="markdownIt-Anchor" href="#区别"></a> 区别</h3>
 <p>优化区别<br />
 <img src="/2025/03/29/deeplearning-note/staticvsdynamicop.png" alt="静态动态优化区别" /><br />
 序列化区别<br />
 <img src="/2025/03/29/deeplearning-note/staticvsdynamicse.png" alt="静态动态序列化区别" /><br />
 调试区别<br />
 <img src="/2025/03/29/deeplearning-note/staticvsdynamicde.png" alt="静态动态调试区别" /></p>
-<h3 id="pytorch"><a class="markdownIt-Anchor" href="#pytorch"></a> Pytorch</h3>
+<h2 id="pytorch"><a class="markdownIt-Anchor" href="#pytorch"></a> Pytorch</h2>
 <p>Pytoch 有三个抽象层次：</p>
 <ul>
 <li>张量</li>
@@ -353,7 +353,7 @@ pytorch 中模型的计算步骤存储在<strong>计算图</strong>中，每个�
 <p>pytorch 可以使用静态图（也可以使用装饰器装饰 model 函数）。<br />
 <img src="/2025/03/29/deeplearning-note/staticgraphinpytorch.png" alt="pytorch静态图" /></p>
 <p>Pytoch 的张量操作中有任何一个输入张量的<code>require_grads</code>属性为<code>True</code>，pytorch 会为这个操作构建一部分计算图，并且操作的输出张量中<code>require_grads</code>属性也被 pytorch 设置为<code>True</code>。</p>
-<h3 id="tensorflow"><a class="markdownIt-Anchor" href="#tensorflow"></a> TensorFlow</h3>
+<h2 id="tensorflow"><a class="markdownIt-Anchor" href="#tensorflow"></a> TensorFlow</h2>
 <p><code>TensorFlow1.0</code>主要用静态计算图，<code>TensorFlow2.0</code>主要用动态计算图。</p>
 <p>TensorFlow 中的<code>keras</code>类似于 pytoch 中的 nn 模块，提供模块级别的抽象。</p>
 <p>TensorFlow 中的<code>tensorboard</code>很好用，是一个用来追踪网络统计信息的<code>web server</code>，pytorch 在<code>torch.utils.tensorboard</code>也提供了对 tensorboard 的支持。</p>
