@@ -198,6 +198,7 @@ for t in range(num_steps):
 ![反向传播](deeplearning-note/Backpropagation.png)
 pytorch 中模型的计算步骤存储在**计算图**中，每个节点代表一次运算。
 反向传播中，对于计算图中每个节点来说 downstream gradient = upstream gradient \* local gradient
+在代码中：正向传播与反向传播的代码通常一一对应，但是顺序相反。
 
 # 卷积网络
 
@@ -253,5 +254,57 @@ stride:下采样，防止网络需要很多层卷积才能获取到输入图片�
 
 > 下采样：任何能够减少输入的空间尺寸的操作
 
-在实际应用中，不应该自己设计新的网络架构，而是应该在现有好的网络基础上修改。
+Tips: 在实际应用中，不应该自己设计新的网络架构，而是应该在现有好的网络基础上修改。
 ![网络选择](deeplearning-note/architecture%20choice.png)
+
+# 框架
+
+## 静态计算图与动态计算图
+
+静态计算图构建好后不会改变，动态计算图在每次前向传播中会构建新的计算图。
+
+### 区别
+
+优化区别
+![静态动态优化区别](deeplearning-note/staticvsdynamicop.png)
+序列化区别
+![静态动态序列化区别](deeplearning-note/staticvsdynamicse.png)
+调试区别
+![静态动态调试区别](deeplearning-note/staticvsdynamicde.png)
+
+## Pytorch
+
+Pytoch 有三个抽象层次：
+
+-   张量
+-   自动微分
+-   模块
+
+![pytorch抽象层次](deeplearning-note/pytorchabstractionlevel.png)
+
+代码实例：
+![pytorch代码实例](deeplearning-note/pytorchcodeexample.png)
+
+`with torch.no_grad():`告诉 pytoch 不要为上下文管理器中的操作构建计算图，通常**梯度更新**和**置零**不需要反向传播来计算梯度。
+
+通过继承 nn.module 可以很方便地自定义网络。
+![自定义网络](deeplearning-note/customizemodule.png)
+
+pytorch 可以很方便地下载并使用预训练好的模型，通常 resnet 效果不错。
+![预训练好的模型](deeplearning-note/pretrainedmodels.png)
+
+pytorch 默认使用动态计算图。动态计算图使你可以在前向传播中使用控制语句，比如根据 loss 的不同选择为一个线性层选择不同的权重矩阵。
+![动态图优点](deeplearning-note/dynamicgraphpro.png)
+
+pytorch 可以使用静态图（也可以使用装饰器装饰 model 函数）。
+![pytorch静态图](deeplearning-note/staticgraphinpytorch.png)
+
+Pytoch 的张量操作中有任何一个输入张量的`require_grads`属性为`True`，pytorch 会为这个操作构建一部分计算图，并且操作的输出张量中`require_grads`属性也被 pytorch 设置为`True`。
+
+## TensorFlow
+
+`TensorFlow1.0`主要用静态计算图，`TensorFlow2.0`主要用动态计算图。
+
+TensorFlow 中的`keras`类似于 pytoch 中的 nn 模块，提供模块级别的抽象。
+
+TensorFlow 中的`tensorboard`很好用，是一个用来追踪网络统计信息的`web server`，pytorch 在`torch.utils.tensorboard`也提供了对 tensorboard 的支持。
