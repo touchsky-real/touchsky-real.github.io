@@ -308,3 +308,121 @@ Pytoch 的张量操作中有任何一个输入张量的`require_grads`属性为`
 TensorFlow 中的`keras`类似于 pytoch 中的 nn 模块，提供模块级别的抽象。
 
 TensorFlow 中的`tensorboard`很好用，是一个用来追踪网络统计信息的`web server`，pytorch 在`torch.utils.tensorboard`也提供了对 tensorboard 的支持。
+
+# 网络的训练
+
+## 激活函数
+
+![激活函数的种类](deeplearning-note/Activation%20Functions.png)
+
+### Sigmoid
+
+问题:
+
+1. 饱和的神经元杀死梯度。当输入的 x 值过大和过小时候，Sigmoid 函数的 local gradient 非常小。
+2. 函数输出不是以零为中心。优化时候会走弯路，采用 minibatch 可以缓解这一点。
+3. 指数运算成本高。
+
+### Dead ReLU
+
+当某个神经元（或者说某一层的某个输出通道）在训练过程中，**_无论_** 输入什么数据，它的输出永远是 0，那这个神经元就叫“死亡”了。
+
+原因是：这个神经元的输入总是小于等于 0。
+
+在 ReLU 的负区间，梯度是 0，反向传播时无法更新权重，那么训练过程中，这个神经元“永远不会再激活”。
+
+采用 Leaky ReLU 可以避免这一问题，但是 Leaky ReLU 中有超参数，可以使网络自动学习这个参数。
+
+### 总结
+
+![激活函数总结](deeplearning-note/activationfuncsummary.png)
+**不要**使用 Sigmoid 或者 tanh,现代的激活函数效果都差不多。
+
+## 网络中的张量
+
+常见的层包括:
+
+1. 全连接层（Linear / Dense）
+
+    - 输入：一个向量，比如大小为 (batch_size, input_dim)
+    - 层定义：nn.Linear(input_dim, output_dim)
+    - 输出：一个向量，形状为 (batch_size, output_dim)
+
+        > `nn.Linear(input_dim, output_dim)`中神经元数量就等于`output_dim`。每个神经元参数数为`input_dim + 1`（权重 + 偏置）。每个神经元都接收所有 `input_dim `个输入特征。
+
+2. 卷积层（Conv2d）
+
+    - 输入：图像/特征图，形状为 (batch_size, in_channels, H, W)
+    - 层定义：nn.Conv2d(in_channels, out_channels, kernel_size)
+    - 输出：形状为 (batch_size, out_channels, H_out, W_out)
+
+3. 激活层（ReLU、Sigmoid、Tanh 等）
+
+    - 不会改变维度，只是逐元素地变换张量的值。
+
+4. Flatten 层
+
+    - 把 tensor 变成一个向量，用于送进全连接层。
+
+## 数据预处理
+
+图像中的像素值(0-255)一般都是正数，梯度就都是正的或是负的，不利于梯度更新。
+
+对于 **图像** ，可以把数据集移到中心，调整方差。
+![图像的数据预处理](deeplearning-note/imagepreprocess.png)
+
+对于 **非图像** ，可以旋转数据集，使得特征之间不相互关联。
+![非图像的数据预处理](deeplearning-note/nonimagepreprocess.png)
+
+所有必须保持一致的转换（如标准化、编码）在训练和测试都做，但用**训练集**的统计量。因为在真实的世界中，没有训练集给你，没办法计算统计量。
+
+不同色彩空间的图片之间的转换关系简单，网络可以很容易学习到，通常用 RGB 空间即可。
+
+常用于图像的数据预处理:
+![常用于图像的数据预处理](deeplearning-note/datapreprocessingimg.png)
+
+## 参数初始化
+
+> 在神经网络中，**激活值** 就是神经元的输出(经过激活函数处理后)，反映的是每个神经元“有没有响应”、“响应强不强”。
+
+对于 ReLU 函数来说，如果激活值是 0，那么梯度就是 0。但是对于 tanh 和 sigmoid 来说不一定。
+
+初始化的目的是 **为了让梯度良好便于优化** 。
+
+用常数去初始化参数会使得梯度非常差，而用高斯分布去初始化网络仅适用于浅层网络，不适用于深层网络。可以采用 Xavier 和 MSRA 初始化。
+
+### Xavier 初始化
+
+对于 tanh 激活函数可以用 Xavier 初始化。原理是保持前后层方差一致。
+
+对于全连接层。高斯分布的方差 std = 1/sqrt(Din)。对于卷积层来说 Din = 卷积核大小的平方\*输入通道数
+
+### MSRA 初始化
+
+对于 Relu 激活函数要进行修正，乘以 2。
+高斯分布的方差 std = 2 /sqrt(Din)
+
+对于残差网络的参数来说:
+![残差网络参数初始化](deeplearning-note/residualinit.png)
+
+## 正则化
+
+### Dropout
+
+通常对于线性层会使用 Dropout 进行正则化。
+
+Dropout 会以概率 p（通常是 0.5），在每次前向传播中，随机将某一层的每个神经元的激活值置为 0，即“丢弃”该神经元，使其在当前这一轮不参与计算。这避免了特征之间的过度依赖。另一种观点是 Dropout 是训练了一大堆权重相同的小模型，每个小模型是完整模型的一部分。
+
+在测试时候，必须缩放激活值使得：测试时候的输出等于训练时候输出的均值。有一种逆 Dropout 是在训练时候缩放来减少测试时候对设备的算力要求。
+
+正则化通常在训练时加入某种随机性，在测试时候平均掉这种随机性，比如 batch normalization。
+![正则化共性](deeplearning-note/regularizationcommonpatern.png)
+
+### 数据增强
+
+对于图片来讲，通过随机剪切、翻转等操作可以引入随机性，但通常不被认为是一种正则化。数据增强种类非常多，可以根据问题引入合适的操作。数据增强可以扩大数据集。
+
+### 总结
+
+Resnet 以后，现在通常只用 l2 正则、batch normalization 和数据增强。
+![正则化总结](deeplearning-note/regularizationsummary.png)
