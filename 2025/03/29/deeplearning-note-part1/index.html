@@ -64,11 +64,11 @@
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/EarlyStopping.png">
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/regularizationsummary.png">
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/lrcosine.png">
-<meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/earningcurve.png">
+<meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/learningcurve.png">
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/possiblelearningcurve.png">
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/transferlearning.png">
 <meta property="article:published_time" content="2025-03-29T12:59:13.000Z">
-<meta property="article:modified_time" content="2025-04-10T14:27:33.237Z">
+<meta property="article:modified_time" content="2025-04-11T13:07:23.488Z">
 <meta property="article:author" content="touchsky">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://example.com/2025/03/29/deeplearning-note-part1/Linear%20Classifiers%20Problem.png">
@@ -225,7 +225,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2025-04-10 22:27:33" itemprop="dateModified" datetime="2025-04-10T22:27:33+08:00">2025-04-10</time>
+                <time title="Modified: 2025-04-11 21:07:23" itemprop="dateModified" datetime="2025-04-11T21:07:23+08:00">2025-04-11</time>
               </span>
 
           
@@ -529,9 +529,11 @@ pytorch 中模型的计算步骤存储在<strong>计算图</strong>中，每个�
 <p><img src="/2025/03/29/deeplearning-note-part1/lrcosine.png" alt="余弦学习率衰减" /></p>
 <p>Adam 算法中使用常数学习率效果就不错。</p>
 <h2 id="超参数的选择"><a class="markdownIt-Anchor" href="#超参数的选择"></a> 超参数的选择</h2>
-<p>如果一个数列在对数坐标系下等间距，那它就是“对数线性”的。如 [0.01, 0.1, 1, 10, 100]，每个值的“对数”相差相同。</p>
 <p>选择超参数时候，网格搜索(grid search)和随机搜索(random search)经常使用。网格搜索指定具体值，随机搜索指定范围。通常都是对数线性区间内。<br />
 一般<strong>随机选择</strong>更好，因为不同超参数对模型表现影响程度可能不一样。</p>
+<blockquote>
+<p>如果一个数列在对数坐标系下等间距，那它就是“对数线性”的。如 [0.01, 0.1, 1, 10, 100]，每个值的“对数”相差相同。</p>
+</blockquote>
 <p>GPU 多如何选择：遍历。<br />
 GPU 少如何选择：</p>
 <ol>
@@ -554,8 +556,8 @@ GPU 少如何选择：</p>
 从第 4 步中挑选表现最好的模型，进行更长时间的训练（大约 10~20 个 epoch），此阶段不使用学习率衰减</li>
 <li>观察学习曲线。</li>
 </ol>
-<p>学习曲线包括损失函数和准确率曲线，非常有用。<br />
-<img src="/2025/03/29/deeplearning-note-part1/earningcurve.png" alt="学习曲线" /></p>
+<p>学习曲线包括损失函数(散点图和移动平均)和准确率（训练集和验证集上）曲线，非常有用。<br />
+<img src="/2025/03/29/deeplearning-note-part1/learningcurve.png" alt="学习曲线" /></p>
 <p>可能会遇到的学习曲线情况：<br />
 <img src="/2025/03/29/deeplearning-note-part1/possiblelearningcurve.png" alt="可能会遇到的学习曲线" /></p>
 <p>有一些经验方法来查看是否出错, 例如参数的更新值/参数值应该在 1e-3 左右。</p>
@@ -582,10 +584,7 @@ GPU 少如何选择：</p>
 
         
     <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2024/09/09/hello-world/" rel="prev" title="Hello World">
-      <i class="fa fa-chevron-left"></i> Hello World
-    </a></div>
+      <div class="post-nav-item"></div>
       <div class="post-nav-item">
     <a href="/2025/04/10/deeplearning-note-part2/" rel="next" title="深度学习笔记(第二部分)">
       深度学习笔记(第二部分) <i class="fa fa-chevron-right"></i>
@@ -662,7 +661,7 @@ GPU 少如何选择：</p>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-count">2</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
