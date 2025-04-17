@@ -104,6 +104,8 @@ for t in range(num_steps):
 
 沿着“陡峭”方向的进展受到抑制，而沿着“平坦”方向的进展被加速。
 
+![AdaGrad 算法](deeplearning-note-part1/AdaGradpro.png)
+
 ```python
 grad_squared = 0  # 初始化梯度累积项
 for t in range(num_steps):
