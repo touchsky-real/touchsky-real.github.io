@@ -21,20 +21,21 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="线性分类器（Linear Classifiers） 线性分类器的缺点  解决方法之一：特征变换   损失函数 损失函数定量描述模型的好坏，它代表了我们对于模型中参数的偏好。可能有两组参数的损失值相同，仅由数据计算而来的损失函数会认为两者相同。可以在损失函数中加入正则项来体现出人类的先验的对参数的偏好。  优化（Optimization） w∗&#x3D;arg⁡min⁡wL(w)w^{*}&#x3D;\operat">
+  <meta name="description" content="线性分类器（Linear Classifiers） 线性分类器的缺点  解决方法之一：特征变换   优化（Optimization） w∗&#x3D;arg⁡min⁡wL(w)w^{*}&#x3D;\operatorname{a r g} \operatorname* {m i n}_{w} L ( w ) w∗&#x3D;argwmin​L(w)  SGD 对 gradient descent 进行 Stochastic">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深度学习笔记(第一部分)">
 <meta property="og:url" content="http://example.com/2025/03/29/deeplearning-note-part1/index.html">
 <meta property="og:site_name" content="Touchsky&#39;s blog">
-<meta property="og:description" content="线性分类器（Linear Classifiers） 线性分类器的缺点  解决方法之一：特征变换   损失函数 损失函数定量描述模型的好坏，它代表了我们对于模型中参数的偏好。可能有两组参数的损失值相同，仅由数据计算而来的损失函数会认为两者相同。可以在损失函数中加入正则项来体现出人类的先验的对参数的偏好。  优化（Optimization） w∗&#x3D;arg⁡min⁡wL(w)w^{*}&#x3D;\operat">
+<meta property="og:description" content="线性分类器（Linear Classifiers） 线性分类器的缺点  解决方法之一：特征变换   优化（Optimization） w∗&#x3D;arg⁡min⁡wL(w)w^{*}&#x3D;\operatorname{a r g} \operatorname* {m i n}_{w} L ( w ) w∗&#x3D;argwmin​L(w)  SGD 对 gradient descent 进行 Stochastic">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/Linear%20Classifiers%20Problem.png">
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/%E7%89%B9%E5%BE%81%E5%8F%98%E6%8D%A2.png">
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/SGDproblem.png">
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/SGDwithMomentum.png">
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/NesterovMomentum.png">
-<meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/image%20Features%20vs%20Neural%20Networks.png">
+<meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/AdaGradpro.png">
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/Activation%20Functions.png">
+<meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/image%20Features%20vs%20Neural%20Networks.png">
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/Backpropagation.png">
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/Convolutional%20filter.png">
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/generlized%20Convolution%20computation.png">
@@ -55,12 +56,12 @@
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/pretrainedmodels.png">
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/dynamicgraphpro.png">
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/staticgraphinpytorch.png">
-<meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/Activation%20Functions.png">
-<meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/activationfuncsummary.png">
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/imagepreprocess.png">
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/nonimagepreprocess.png">
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/datapreprocessingimg.png">
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/residualinit.png">
+<meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/Activation%20Functions.png">
+<meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/activationfuncsummary.png">
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/lrcosine.png">
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/learningcurve.png">
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/possiblelearningcurve.png">
@@ -69,7 +70,7 @@
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/regularizationsummary.png">
 <meta property="og:image" content="http://example.com/2025/03/29/deeplearning-note-part1/transferlearning.png">
 <meta property="article:published_time" content="2025-03-29T12:59:13.000Z">
-<meta property="article:modified_time" content="2025-04-14T14:01:27.673Z">
+<meta property="article:modified_time" content="2025-04-17T07:50:11.463Z">
 <meta property="article:author" content="touchsky">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://example.com/2025/03/29/deeplearning-note-part1/Linear%20Classifiers%20Problem.png">
@@ -226,7 +227,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2025-04-14 22:01:27" itemprop="dateModified" datetime="2025-04-14T22:01:27+08:00">2025-04-14</time>
+                <time title="Modified: 2025-04-17 15:50:11" itemprop="dateModified" datetime="2025-04-17T15:50:11+08:00">2025-04-17</time>
               </span>
 
           
@@ -245,8 +246,6 @@
 <img src="/2025/03/29/deeplearning-note-part1/Linear%20Classifiers%20Problem.png" alt="线性分类器的缺点" /></p>
 <p>解决方法之一：<strong>特征变换</strong><br />
 <img src="/2025/03/29/deeplearning-note-part1/%E7%89%B9%E5%BE%81%E5%8F%98%E6%8D%A2.png" alt="特征变换" /></p>
-<h2 id="损失函数"><a class="markdownIt-Anchor" href="#损失函数"></a> 损失函数</h2>
-<p>损失函数定量描述模型的好坏，它代表了我们对于模型中参数的偏好。可能有两组参数的损失值相同，仅由数据计算而来的损失函数会认为两者相同。可以在损失函数中加入正则项来体现出人类的先验的对参数的偏好。</p>
 <h1 id="优化optimization"><a class="markdownIt-Anchor" href="#优化optimization"></a> 优化（Optimization）</h1>
 <p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msup><mi>w</mi><mo lspace="0em" rspace="0em">∗</mo></msup><mo>=</mo><mi mathvariant="normal">arg</mi><mo>⁡</mo><munder><mo><mi mathvariant="normal">min</mi><mo>⁡</mo></mo><mi>w</mi></munder><mi>L</mi><mo stretchy="false">(</mo><mi>w</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">w^{*}=\operatorname{a r g} \operatorname* {m i n}_{w} L ( w )
 </annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.738696em;vertical-align:0em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.738696em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">∗</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.45em;vertical-align:-0.7em;"></span><span class="mop"><span class="mord mathrm">a</span><span class="mord mathrm">r</span><span class="mord mathrm" style="margin-right:0.01389em;">g</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.66786em;"><span style="top:-2.4em;margin-left:0em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.02691em;">w</span></span></span></span><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span><span class="mop"><span class="mord mathrm">m</span><span class="mord mathrm">i</span><span class="mord mathrm">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.7em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal">L</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="mclose">)</span></span></span></span></span></p>
@@ -283,6 +282,7 @@ x_{t+1} &amp;= x_{t} - \alpha v_{t+1}
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">V = <span class="number">0</span>  <span class="comment"># 初始化动量</span></span><br><span class="line"><span class="keyword">for</span> t <span class="keyword">in</span> <span class="built_in">range</span>(num_steps):</span><br><span class="line">    dw = compute_gradient(w)  <span class="comment"># 计算梯度</span></span><br><span class="line">    old_v = V  <span class="comment"># 记录旧的动量</span></span><br><span class="line">    V = rho * V - learning_rate * dw  <span class="comment"># 更新动量</span></span><br><span class="line">    w -= rho * old_v - (<span class="number">1</span> + rho) * V  <span class="comment"># 更新权重</span></span><br></pre></td></tr></table></figure>
 <h2 id="adagrad-算法adaptive-gradient-algorithm"><a class="markdownIt-Anchor" href="#adagrad-算法adaptive-gradient-algorithm"></a> AdaGrad 算法（Adaptive Gradient Algorithm）</h2>
 <p>沿着“陡峭”方向的进展受到抑制，而沿着“平坦”方向的进展被加速。</p>
+<p><img src="/2025/03/29/deeplearning-note-part1/AdaGradpro.png" alt="AdaGrad 算法" /></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">grad_squared = <span class="number">0</span>  <span class="comment"># 初始化梯度累积项</span></span><br><span class="line"><span class="keyword">for</span> t <span class="keyword">in</span> <span class="built_in">range</span>(num_steps):</span><br><span class="line">    dw = compute_gradient(w)  <span class="comment"># 计算梯度</span></span><br><span class="line">    grad_squared += dw * dw  <span class="comment"># 累积梯度平方</span></span><br><span class="line">    w -= learning_rate * dw / (grad_squared.sqrt() + <span class="number">1e-7</span>)  <span class="comment"># 进行参数更新，避免除零</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>问题：grad_squared 可能会在到达损失函数最低点过大，而使得参数停止更新。<br />
 解决方法：<strong>RMSProp</strong>。</p>
@@ -294,12 +294,19 @@ x_{t+1} &amp;= x_{t} - \alpha v_{t+1}
 但是刚开始的时候梯度可能过大。<br />
 优化：<strong>偏差修正</strong>。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">moment1 = <span class="number">0</span>  <span class="comment"># 一阶矩估计（动量项）</span></span><br><span class="line">moment2 = <span class="number">0</span>  <span class="comment"># 二阶矩估计（梯度平方的指数加权平均）</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> t <span class="keyword">in</span> <span class="built_in">range</span>(num_steps):</span><br><span class="line">    dw = compute_gradient(w)  <span class="comment"># 计算梯度</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 计算一阶矩估计（动量）</span></span><br><span class="line">    moment1 = beta1 * moment1 + (<span class="number">1</span> - beta1) * dw</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 计算二阶矩估计（梯度平方的移动平均）</span></span><br><span class="line">    moment2 = beta2 * moment2 + (<span class="number">1</span> - beta2) * dw * dw</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 计算一阶和二阶矩的偏差修正</span></span><br><span class="line">    moment1_unbias = moment1 / (<span class="number">1</span> - beta1 ** t)</span><br><span class="line">    moment2_unbias = moment2 / (<span class="number">1</span> - beta2 ** t)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 更新参数</span></span><br><span class="line">    w -= learning_rate * moment1_unbias / (moment2_unbias.sqrt() + <span class="number">1e-7</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h3 id="经验"><a class="markdownIt-Anchor" href="#经验"></a> 经验</h3>
 <blockquote>
 <p>Adam with beta1 = 0.9<br />
 beta2 = 0.999, and learning rate = 1e-3, 5e-4, 1e-4 is a great starting point for many models!</p>
 </blockquote>
 <h1 id="神经网络"><a class="markdownIt-Anchor" href="#神经网络"></a> 神经网络</h1>
+<h2 id="基础概念"><a class="markdownIt-Anchor" href="#基础概念"></a> 基础概念</h2>
+<p>深度神经网络的层数通常是指网络所含权重矩阵的个数。<br />
+宽度是隐藏表示的纬度。隐藏表示的纬度通常是一样的。<br />
+激活函数可以看成两个权重矩阵之间的“三明治”，给予网络额外的表现能力。</p>
+<p>激活函数有多种。<br />
+<img src="/2025/03/29/deeplearning-note-part1/Activation%20Functions.png" alt="激活函数的种类" /></p>
+<p>通常应该使用某种可调正则化参数的神经网络模型，而不是直接依赖网络本身的大小作为正则化因子。<br />
+网络大小不一定是最优正则化方式：虽然较大的网络可能更容易过拟合，但仅仅减少参数数量并不总是最佳策略。</p>
 <h2 id="特征变换"><a class="markdownIt-Anchor" href="#特征变换"></a> 特征变换</h2>
 <p>通过对原始的输入特征进行变换，可能就能够处理原来的模型所不能处理的问题。对于图像分类而言，常用的特征变换包括：</p>
 <ul>
@@ -312,14 +319,6 @@ beta2 = 0.999, and learning rate = 1e-3, 5e-4, 1e-4 is a great starting point fo
 <h2 id="端到端的学习"><a class="markdownIt-Anchor" href="#端到端的学习"></a> 端到端的学习</h2>
 <p>先进行特征提取再利用模型在提取出的特征上对图像进行分类时候，只会调整模型的参数，而特征提取的部分可能不会提高图片的分类效果。<br />
 因此，更好的办法是端到端的学习，输入原始数据，输出想要的结果。中间整体地对特征提取和特征处理部分进行训练来提高图像分类效果。</p>
-<h2 id="基础概念"><a class="markdownIt-Anchor" href="#基础概念"></a> 基础概念</h2>
-<p>深度神经网络的层数通常是指网络所含权重矩阵的个数。<br />
-宽度是隐藏表示的纬度。隐藏表示的纬度通常是一样的。<br />
-激活函数可以看成两个权重矩阵之间的“三明治”，给予网络额外的表现能力。</p>
-<p>激活函数有多种。<br />
-<img src="/2025/03/29/deeplearning-note-part1/Activation%20Functions.png" alt="激活函数的种类" /></p>
-<p>通常应该使用某种可调正则化参数的神经网络模型，而不是直接依赖网络本身的大小作为正则化因子。<br />
-网络大小不一定是最优正则化方式：虽然较大的网络可能更容易过拟合，但仅仅减少参数数量并不总是最佳策略。</p>
 <h2 id="反向传播"><a class="markdownIt-Anchor" href="#反向传播"></a> 反向传播</h2>
 <p><img src="/2025/03/29/deeplearning-note-part1/Backpropagation.png" alt="反向传播" /><br />
 pytorch 中模型的计算步骤存储在<strong>计算图</strong>中，每个节点代表一次运算。<br />
@@ -351,7 +350,7 @@ pytorch 中模型的计算步骤存储在<strong>计算图</strong>中，每个�
 <h2 id="全连接层和-1x1-卷积的区别"><a class="markdownIt-Anchor" href="#全连接层和-1x1-卷积的区别"></a> 全连接层和 1x1 卷积的区别</h2>
 <p>全连接层可以用来破坏空间结构，比如网络最后一层生成分数。<br />
 1x1 卷积用来调节通道深度。</p>
-<h2 id="归一化"><a class="markdownIt-Anchor" href="#归一化"></a> 归一化</h2>
+<h2 id="批量归一化"><a class="markdownIt-Anchor" href="#批量归一化"></a> 批量归一化</h2>
 <p>问题：网络很难训练。解决方法：归一化<br />
 通常使用 <strong>批量归一化(BatchNorm)</strong> ，使得每一层的输出符合均值为 0，方差为 1 的分布。<br />
 批量归一化最初是为了解决神经网络训练中的“内部协变量偏移（Internal Covariate Shift）”问题,不是专门为了防止过拟合而设计的，但它确实能在一定程度上减少过拟合，这是一种“副作用”。<br />
@@ -361,7 +360,7 @@ pytorch 中模型的计算步骤存储在<strong>计算图</strong>中，每个�
 推理时：<br />
 <img src="/2025/03/29/deeplearning-note-part1/batch%20norm%20in%20test.png" alt="批量归一化" /></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 对于卷积层，批归一化在每个通道上单独进行</span></span><br><span class="line"><span class="comment"># 输入形状：(N, C, H, W)</span></span><br><span class="line"><span class="comment"># N：批次大小</span></span><br><span class="line"><span class="comment"># C：通道数</span></span><br><span class="line"><span class="comment"># H, W：特征图高度和宽度</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 对每个通道c：</span></span><br><span class="line">μc = mean(x[:, c, :, :])  <span class="comment"># 计算通道均值</span></span><br><span class="line">σ²c = var(x[:, c, :, :])  <span class="comment"># 计算通道方差</span></span><br><span class="line">x̂c = (x[:, c, :, :] - μc) / √(σ²c + ε)  <span class="comment"># ε是一个很小的数，防止除零</span></span><br><span class="line">yc = γc * x̂c + βc</span><br></pre></td></tr></table></figure>
-<p><strong>批量归一化</strong> 中一个批次的样本之间相互影响，<strong>层归一化</strong>可以避免这一问题。</p>
+<p><strong>批量归一化</strong> 中一个批次的样本之间相互影响，<strong>层归一化</strong>可以避免这一问题</p>
 <h2 id="vgg-net"><a class="markdownIt-Anchor" href="#vgg-net"></a> VGG Net</h2>
 <p>两个 3x3 的卷积比单个 5x5 的卷积在参数、浮点计算更低的情况下效果可能会更好。<br />
 用卷积 stage 替换卷积层。每个 stage 里有多个卷积。<br />
@@ -415,65 +414,6 @@ pytorch 中模型的计算步骤存储在<strong>计算图</strong>中，每个�
 <p>TensorFlow 中的<code>keras</code>类似于 pytoch 中的 nn 模块，提供模块级别的抽象。</p>
 <p>TensorFlow 中的<code>tensorboard</code>很好用，是一个用来追踪网络统计信息的<code>web server</code>，pytorch 在<code>torch.utils.tensorboard</code>也提供了对 tensorboard 的支持。</p>
 <h1 id="网络的训练"><a class="markdownIt-Anchor" href="#网络的训练"></a> 网络的训练</h1>
-<h2 id="激活函数"><a class="markdownIt-Anchor" href="#激活函数"></a> 激活函数</h2>
-<p><img src="/2025/03/29/deeplearning-note-part1/Activation%20Functions.png" alt="激活函数的种类" /></p>
-<h3 id="sigmoid"><a class="markdownIt-Anchor" href="#sigmoid"></a> Sigmoid</h3>
-<p>问题:</p>
-<ol>
-<li>饱和的神经元杀死梯度。当输入的 x 值过大和过小时候，Sigmoid 函数的 local gradient 非常小。</li>
-<li>函数输出不是以零为中心。优化时候会走弯路，采用 minibatch 可以缓解这一点。</li>
-<li>指数运算成本高。</li>
-</ol>
-<h3 id="dead-relu"><a class="markdownIt-Anchor" href="#dead-relu"></a> Dead ReLU</h3>
-<p>当某个神经元（或者说某一层的某个输出通道）在训练过程中，<strong><em>无论</em></strong> 输入什么数据，它的输出永远是 0，那这个神经元就叫“死亡”了。</p>
-<p>原因是：这个神经元的输入总是小于等于 0。</p>
-<p>在 ReLU 的负区间，梯度是 0，反向传播时无法更新权重，那么训练过程中，这个神经元“永远不会再激活”。</p>
-<p>采用 Leaky ReLU 可以避免这一问题，但是 Leaky ReLU 中有超参数，可以使网络自动学习这个参数。</p>
-<h3 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h3>
-<p><img src="/2025/03/29/deeplearning-note-part1/activationfuncsummary.png" alt="激活函数总结" /><br />
-<strong>不要</strong>使用 Sigmoid 或者 tanh,现代的激活函数效果都差不多。</p>
-<h2 id="网络中的张量"><a class="markdownIt-Anchor" href="#网络中的张量"></a> 网络中的张量</h2>
-<p>参数的梯度表示的是损失函数对该参数的偏导数，参数的梯度的 shape 与参数本身的 shape 是一般是<strong>一样</strong>的，这样在更新参数时才可以逐元素地进行更新。</p>
-<p>常见的层包括:</p>
-<ol>
-<li>
-<p>全连接层（Linear / Dense）</p>
-<ul>
-<li>
-<p>输入：一个向量，比如大小为 (batch_size, input_dim)</p>
-</li>
-<li>
-<p>层定义：nn.Linear(input_dim, output_dim)</p>
-</li>
-<li>
-<p>输出：一个向量，形状为 (batch_size, output_dim)</p>
-<blockquote>
-<p><code>nn.Linear(input_dim, output_dim)</code>中神经元数量就等于<code>output_dim</code>。每个神经元参数数为<code>input_dim + 1</code>（权重 + 偏置）。每个神经元都接收所有 <code>input_dim</code>个输入特征。</p>
-</blockquote>
-</li>
-</ul>
-</li>
-<li>
-<p>卷积层（Conv2d）</p>
-<ul>
-<li>输入：图像/特征图，形状为 (batch_size, in_channels, H, W)</li>
-<li>层定义：nn.Conv2d(in_channels, out_channels, kernel_size)</li>
-<li>输出：形状为 (batch_size, out_channels, H_out, W_out)</li>
-</ul>
-</li>
-<li>
-<p>激活层（ReLU、Sigmoid、Tanh 等）</p>
-<ul>
-<li>不会改变维度，只是逐元素地变换张量的值。</li>
-</ul>
-</li>
-<li>
-<p>Flatten 层</p>
-<ul>
-<li>把 tensor 变成一个向量，用于送进全连接层。</li>
-</ul>
-</li>
-</ol>
 <h2 id="数据预处理"><a class="markdownIt-Anchor" href="#数据预处理"></a> 数据预处理</h2>
 <p>图像中的像素值(0-255)一般都是正数，梯度就都是正的或是负的，不利于梯度更新。</p>
 <p>对于 <strong>图像</strong> ，可以把数据集移到中心，调整方差。<br />
@@ -502,6 +442,25 @@ pytorch 中模型的计算步骤存储在<strong>计算图</strong>中，每个�
 高斯分布的标准差 std = 2 /sqrt(Din)</p>
 <p>对于残差网络的参数来说:<br />
 <img src="/2025/03/29/deeplearning-note-part1/residualinit.png" alt="残差网络参数初始化" /></p>
+<h2 id="损失函数"><a class="markdownIt-Anchor" href="#损失函数"></a> 损失函数</h2>
+<p>损失函数定量描述模型的好坏，它代表了我们对于模型中参数的偏好。可能有两组参数的损失值相同，仅由数据计算而来的损失函数会认为两者相同。可以在损失函数中加入正则项来体现出人类的先验的对参数的偏好。</p>
+<h2 id="激活函数"><a class="markdownIt-Anchor" href="#激活函数"></a> 激活函数</h2>
+<p><img src="/2025/03/29/deeplearning-note-part1/Activation%20Functions.png" alt="激活函数的种类" /></p>
+<h3 id="sigmoid"><a class="markdownIt-Anchor" href="#sigmoid"></a> Sigmoid</h3>
+<p>问题:</p>
+<ol>
+<li>饱和的神经元杀死梯度。当输入的 x 值过大和过小时候，Sigmoid 函数的 local gradient 非常小。</li>
+<li>函数输出不是以零为中心。优化时候会走弯路，采用 minibatch 可以缓解这一点。</li>
+<li>指数运算成本高。</li>
+</ol>
+<h3 id="dead-relu"><a class="markdownIt-Anchor" href="#dead-relu"></a> Dead ReLU</h3>
+<p>当某个神经元（或者说某一层的某个输出通道）在训练过程中，<strong><em>无论</em></strong> 输入什么数据，它的输出永远是 0，那这个神经元就叫“死亡”了。</p>
+<p>原因是：这个神经元的输入总是小于等于 0。</p>
+<p>在 ReLU 的负区间，梯度是 0，反向传播时无法更新权重，那么训练过程中，这个神经元“永远不会再激活”。</p>
+<p>采用 Leaky ReLU 可以避免这一问题，但是 Leaky ReLU 中有超参数，可以使网络自动学习这个参数。</p>
+<h3 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h3>
+<p><img src="/2025/03/29/deeplearning-note-part1/activationfuncsummary.png" alt="激活函数总结" /><br />
+<strong>不要</strong>使用 Sigmoid 或者 tanh,现代的激活函数效果都差不多。</p>
 <h2 id="超参数"><a class="markdownIt-Anchor" href="#超参数"></a> 超参数</h2>
 <h3 id="learning-rate-schedule"><a class="markdownIt-Anchor" href="#learning-rate-schedule"></a> Learning rate schedule</h3>
 <p>大多数优化算法中都有<strong>学习率</strong>的超参数，可以依据训练轮次设置不同的学习率。但常数学习率通常也是不错的选择。</p>
@@ -555,18 +514,85 @@ GPU 少按以下方法选择：</p>
 <p>对于图片来讲，通过随机剪切、翻转等操作可以引入随机性，但通常不被认为是一种正则化。数据增强种类非常多，可以根据问题引入合适的操作。数据增强可以扩大数据集。</p>
 <h3 id="早停法early-stopping"><a class="markdownIt-Anchor" href="#早停法early-stopping"></a> 早停法（Early Stopping）</h3>
 <p><img src="/2025/03/29/deeplearning-note-part1/EarlyStopping.png" alt="早停法" /></p>
+<h3 id="批量归一化-2"><a class="markdownIt-Anchor" href="#批量归一化-2"></a> 批量归一化</h3>
+<p>见<a href="#%E6%89%B9%E9%87%8F%E5%BD%92%E4%B8%80%E5%8C%96">卷积网络</a>章节中的介绍</p>
 <h3 id="总结-2"><a class="markdownIt-Anchor" href="#总结-2"></a> 总结</h3>
-<p>Resnet 以后，现在通常只用 l2 正则、batch normalization 和数据增强。<br />
-<img src="/2025/03/29/deeplearning-note-part1/regularizationsummary.png" alt="正则化总结" /></p>
-<h2 id="迭代iteration与轮次epoch"><a class="markdownIt-Anchor" href="#迭代iteration与轮次epoch"></a> 迭代（iteration）与轮次（epoch）</h2>
+<p>Resnet 以后，现在通常只用 l2 正则、batch normalization 和数据增强。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">网络层类型</th>
+<th style="text-align:center">常用正则化方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">线性层</td>
+<td style="text-align:center">Dropout</td>
+</tr>
+<tr>
+<td style="text-align:center">卷积层</td>
+<td style="text-align:center">批量归一化</td>
+</tr>
+<tr>
+<td style="text-align:center">Transformer 块</td>
+<td style="text-align:center">层归一化</td>
+</tr>
+</tbody>
+</table>
+<p><img src="/2025/03/29/deeplearning-note-part1/regularizationsummary.png" alt="正则化总结" /></p>
+<h2 id="其他"><a class="markdownIt-Anchor" href="#其他"></a> 其他</h2>
+<h3 id="网络中的张量"><a class="markdownIt-Anchor" href="#网络中的张量"></a> 网络中的张量</h3>
+<p>参数的梯度表示的是损失函数对该参数的偏导数，参数的梯度的 shape 与参数本身的 shape 是一般是<strong>一样</strong>的，这样在更新参数时才可以逐元素地进行更新。</p>
+<p>常见的层包括:</p>
+<ol>
+<li>
+<p>全连接层（Linear / Dense）</p>
+<ul>
+<li>
+<p>输入：一个向量，比如大小为 (batch_size, input_dim)</p>
+</li>
+<li>
+<p>层定义：nn.Linear(input_dim, output_dim)</p>
+</li>
+<li>
+<p>输出：一个向量，形状为 (batch_size, output_dim)</p>
+<blockquote>
+<p><code>nn.Linear(input_dim, output_dim)</code>中神经元数量就等于<code>output_dim</code>。每个神经元参数数为<code>input_dim + 1</code>（权重 + 偏置）。每个神经元都接收所有 <code>input_dim</code>个输入特征。</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li>
+<p>卷积层（Conv2d）</p>
+<ul>
+<li>输入：图像/特征图，形状为 (batch_size, in_channels, H, W)</li>
+<li>层定义：nn.Conv2d(in_channels, out_channels, kernel_size)</li>
+<li>输出：形状为 (batch_size, out_channels, H_out, W_out)</li>
+</ul>
+</li>
+<li>
+<p>激活层（ReLU、Sigmoid、Tanh 等）</p>
+<ul>
+<li>不会改变维度，只是逐元素地变换张量的值。</li>
+</ul>
+</li>
+<li>
+<p>Flatten 层</p>
+<ul>
+<li>把 tensor 变成一个向量，用于送进全连接层。</li>
+</ul>
+</li>
+</ol>
+<h3 id="迭代iteration与轮次epoch"><a class="markdownIt-Anchor" href="#迭代iteration与轮次epoch"></a> 迭代（iteration）与轮次（epoch）</h3>
 <ul>
 <li><strong>Epoch</strong>:数据集被完整地送入模型中训练一次（全体样本都训练过一次）</li>
 <li><strong>Iteration</strong>:一次参数更新，也就是一个 batch 被送入模型训练一次</li>
 </ul>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="built_in">range</span>(num_epochs):        <span class="comment"># 外层是 epoch</span></span><br><span class="line">    <span class="keyword">for</span> batch <span class="keyword">in</span> dataloader:          <span class="comment"># 内层是 iteration</span></span><br><span class="line">        ...</span><br><span class="line">        optimizer.step()              <span class="comment"># 每个 batch 更新一次参数 = 一个 iteration</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h2 id="模型集成"><a class="markdownIt-Anchor" href="#模型集成"></a> 模型集成</h2>
+<h3 id="模型集成"><a class="markdownIt-Anchor" href="#模型集成"></a> 模型集成</h3>
 <p>集成多个模型和集成训练中<strong>模型的多个历史快照</strong>通常可以稍微提高模型表现。</p>
-<h2 id="迁移学习"><a class="markdownIt-Anchor" href="#迁移学习"></a> 迁移学习</h2>
+<h3 id="迁移学习"><a class="markdownIt-Anchor" href="#迁移学习"></a> 迁移学习</h3>
 <ol>
 <li>可以把 CNN 作为特征提取器，去除最后一层，用 CNN 提取出的特征训练简单的线性分类器可以实现不错效果。</li>
 <li>也可以微调模型，在新的数据集上继续训练 CNN 模型。</li>
@@ -650,7 +676,7 @@ GPU 少按以下方法选择：</p>
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E5%88%86%E7%B1%BB%E5%99%A8linear-classifiers"><span class="nav-number">1.</span> <span class="nav-text"> 线性分类器（Linear Classifiers）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0"><span class="nav-number">1.1.</span> <span class="nav-text"> 损失函数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BC%98%E5%8C%96optimization"><span class="nav-number">2.</span> <span class="nav-text"> 优化（Optimization）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#sgd"><span class="nav-number">2.1.</span> <span class="nav-text"> SGD</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%AE%E9%A2%98"><span class="nav-number">2.1.1.</span> <span class="nav-text"> 问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sgd-with-momentum"><span class="nav-number">2.2.</span> <span class="nav-text"> SGD with Momentum</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nesterov-momentum"><span class="nav-number">2.3.</span> <span class="nav-text"> Nesterov Momentum</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#adagrad-%E7%AE%97%E6%B3%95adaptive-gradient-algorithm"><span class="nav-number">2.4.</span> <span class="nav-text"> AdaGrad 算法（Adaptive Gradient Algorithm）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rmsprop"><span class="nav-number">2.5.</span> <span class="nav-text"> RMSProp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#adam-%E7%AE%97%E6%B3%95"><span class="nav-number">2.6.</span> <span class="nav-text"> Adam 算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%8F%E9%AA%8C"><span class="nav-number">2.6.1.</span> <span class="nav-text"> 经验</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="nav-number">3.</span> <span class="nav-text"> 神经网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E5%BE%81%E5%8F%98%E6%8D%A2"><span class="nav-number">3.1.</span> <span class="nav-text"> 特征变换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AB%AF%E5%88%B0%E7%AB%AF%E7%9A%84%E5%AD%A6%E4%B9%A0"><span class="nav-number">3.2.</span> <span class="nav-text"> 端到端的学习</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span class="nav-number">3.3.</span> <span class="nav-text"> 基础概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD"><span class="nav-number">3.4.</span> <span class="nav-text"> 反向传播</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%B7%E7%A7%AF%E7%BD%91%E7%BB%9C"><span class="nav-number">4.</span> <span class="nav-text"> 卷积网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A5%E5%B9%85%E5%92%8C%E5%A1%AB%E5%85%85"><span class="nav-number">4.1.</span> <span class="nav-text"> 步幅和填充</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E8%BF%9E%E6%8E%A5%E5%B1%82%E5%92%8C-1x1-%E5%8D%B7%E7%A7%AF%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">4.2.</span> <span class="nav-text"> 全连接层和 1x1 卷积的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%92%E4%B8%80%E5%8C%96"><span class="nav-number">4.3.</span> <span class="nav-text"> 归一化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#vgg-net"><span class="nav-number">4.4.</span> <span class="nav-text"> VGG Net</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AE%8B%E5%B7%AE%E7%BD%91%E7%BB%9Cresnet"><span class="nav-number">4.5.</span> <span class="nav-text"> 残差网络（ResNet）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A1%86%E6%9E%B6"><span class="nav-number">5.</span> <span class="nav-text"> 框架</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E8%AE%A1%E7%AE%97%E5%9B%BE%E4%B8%8E%E5%8A%A8%E6%80%81%E8%AE%A1%E7%AE%97%E5%9B%BE"><span class="nav-number">5.1.</span> <span class="nav-text"> 静态计算图与动态计算图</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8C%BA%E5%88%AB"><span class="nav-number">5.1.1.</span> <span class="nav-text"> 区别</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pytorch"><span class="nav-number">5.2.</span> <span class="nav-text"> Pytorch</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tensorflow"><span class="nav-number">5.3.</span> <span class="nav-text"> TensorFlow</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E7%9A%84%E8%AE%AD%E7%BB%83"><span class="nav-number">6.</span> <span class="nav-text"> 网络的训练</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0"><span class="nav-number">6.1.</span> <span class="nav-text"> 激活函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#sigmoid"><span class="nav-number">6.1.1.</span> <span class="nav-text"> Sigmoid</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dead-relu"><span class="nav-number">6.1.2.</span> <span class="nav-text"> Dead ReLU</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">6.1.3.</span> <span class="nav-text"> 总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E4%B8%AD%E7%9A%84%E5%BC%A0%E9%87%8F"><span class="nav-number">6.2.</span> <span class="nav-text"> 网络中的张量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86"><span class="nav-number">6.3.</span> <span class="nav-text"> 数据预处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">6.4.</span> <span class="nav-text"> 参数初始化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#xavier-%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">6.4.1.</span> <span class="nav-text"> Xavier 初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#msrakaiming-%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">6.4.2.</span> <span class="nav-text"> MSRA(Kaiming) 初始化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B6%85%E5%8F%82%E6%95%B0"><span class="nav-number">6.5.</span> <span class="nav-text"> 超参数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#learning-rate-schedule"><span class="nav-number">6.5.1.</span> <span class="nav-text"> Learning rate schedule</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%90%9C%E7%B4%A2%E8%B6%85%E5%8F%82%E6%95%B0"><span class="nav-number">6.5.2.</span> <span class="nav-text"> 搜索超参数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E5%88%99%E5%8C%96"><span class="nav-number">6.6.</span> <span class="nav-text"> 正则化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#dropout"><span class="nav-number">6.6.1.</span> <span class="nav-text"> Dropout</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%A2%9E%E5%BC%BA"><span class="nav-number">6.6.2.</span> <span class="nav-text"> 数据增强</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A9%E5%81%9C%E6%B3%95early-stopping"><span class="nav-number">6.6.3.</span> <span class="nav-text"> 早停法（Early Stopping）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-2"><span class="nav-number">6.6.4.</span> <span class="nav-text"> 总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%AD%E4%BB%A3iteration%E4%B8%8E%E8%BD%AE%E6%AC%A1epoch"><span class="nav-number">6.7.</span> <span class="nav-text"> 迭代（iteration）与轮次（epoch）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E9%9B%86%E6%88%90"><span class="nav-number">6.8.</span> <span class="nav-text"> 模型集成</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0"><span class="nav-number">6.9.</span> <span class="nav-text"> 迁移学习</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E5%88%86%E7%B1%BB%E5%99%A8linear-classifiers"><span class="nav-number">1.</span> <span class="nav-text"> 线性分类器（Linear Classifiers）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BC%98%E5%8C%96optimization"><span class="nav-number">2.</span> <span class="nav-text"> 优化（Optimization）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#sgd"><span class="nav-number">2.1.</span> <span class="nav-text"> SGD</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%97%AE%E9%A2%98"><span class="nav-number">2.1.1.</span> <span class="nav-text"> 问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sgd-with-momentum"><span class="nav-number">2.2.</span> <span class="nav-text"> SGD with Momentum</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nesterov-momentum"><span class="nav-number">2.3.</span> <span class="nav-text"> Nesterov Momentum</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#adagrad-%E7%AE%97%E6%B3%95adaptive-gradient-algorithm"><span class="nav-number">2.4.</span> <span class="nav-text"> AdaGrad 算法（Adaptive Gradient Algorithm）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rmsprop"><span class="nav-number">2.5.</span> <span class="nav-text"> RMSProp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#adam-%E7%AE%97%E6%B3%95"><span class="nav-number">2.6.</span> <span class="nav-text"> Adam 算法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="nav-number">3.</span> <span class="nav-text"> 神经网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span class="nav-number">3.1.</span> <span class="nav-text"> 基础概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E5%BE%81%E5%8F%98%E6%8D%A2"><span class="nav-number">3.2.</span> <span class="nav-text"> 特征变换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AB%AF%E5%88%B0%E7%AB%AF%E7%9A%84%E5%AD%A6%E4%B9%A0"><span class="nav-number">3.3.</span> <span class="nav-text"> 端到端的学习</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD"><span class="nav-number">3.4.</span> <span class="nav-text"> 反向传播</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%B7%E7%A7%AF%E7%BD%91%E7%BB%9C"><span class="nav-number">4.</span> <span class="nav-text"> 卷积网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A5%E5%B9%85%E5%92%8C%E5%A1%AB%E5%85%85"><span class="nav-number">4.1.</span> <span class="nav-text"> 步幅和填充</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E8%BF%9E%E6%8E%A5%E5%B1%82%E5%92%8C-1x1-%E5%8D%B7%E7%A7%AF%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">4.2.</span> <span class="nav-text"> 全连接层和 1x1 卷积的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%B9%E9%87%8F%E5%BD%92%E4%B8%80%E5%8C%96"><span class="nav-number">4.3.</span> <span class="nav-text"> 批量归一化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#vgg-net"><span class="nav-number">4.4.</span> <span class="nav-text"> VGG Net</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AE%8B%E5%B7%AE%E7%BD%91%E7%BB%9Cresnet"><span class="nav-number">4.5.</span> <span class="nav-text"> 残差网络（ResNet）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A1%86%E6%9E%B6"><span class="nav-number">5.</span> <span class="nav-text"> 框架</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E8%AE%A1%E7%AE%97%E5%9B%BE%E4%B8%8E%E5%8A%A8%E6%80%81%E8%AE%A1%E7%AE%97%E5%9B%BE"><span class="nav-number">5.1.</span> <span class="nav-text"> 静态计算图与动态计算图</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8C%BA%E5%88%AB"><span class="nav-number">5.1.1.</span> <span class="nav-text"> 区别</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pytorch"><span class="nav-number">5.2.</span> <span class="nav-text"> Pytorch</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tensorflow"><span class="nav-number">5.3.</span> <span class="nav-text"> TensorFlow</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E7%9A%84%E8%AE%AD%E7%BB%83"><span class="nav-number">6.</span> <span class="nav-text"> 网络的训练</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86"><span class="nav-number">6.1.</span> <span class="nav-text"> 数据预处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">6.2.</span> <span class="nav-text"> 参数初始化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#xavier-%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">6.2.1.</span> <span class="nav-text"> Xavier 初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#msrakaiming-%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">6.2.2.</span> <span class="nav-text"> MSRA(Kaiming) 初始化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0"><span class="nav-number">6.3.</span> <span class="nav-text"> 损失函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BF%80%E6%B4%BB%E5%87%BD%E6%95%B0"><span class="nav-number">6.4.</span> <span class="nav-text"> 激活函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#sigmoid"><span class="nav-number">6.4.1.</span> <span class="nav-text"> Sigmoid</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dead-relu"><span class="nav-number">6.4.2.</span> <span class="nav-text"> Dead ReLU</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">6.4.3.</span> <span class="nav-text"> 总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B6%85%E5%8F%82%E6%95%B0"><span class="nav-number">6.5.</span> <span class="nav-text"> 超参数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#learning-rate-schedule"><span class="nav-number">6.5.1.</span> <span class="nav-text"> Learning rate schedule</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%90%9C%E7%B4%A2%E8%B6%85%E5%8F%82%E6%95%B0"><span class="nav-number">6.5.2.</span> <span class="nav-text"> 搜索超参数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A3%E5%88%99%E5%8C%96"><span class="nav-number">6.6.</span> <span class="nav-text"> 正则化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#dropout"><span class="nav-number">6.6.1.</span> <span class="nav-text"> Dropout</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%A2%9E%E5%BC%BA"><span class="nav-number">6.6.2.</span> <span class="nav-text"> 数据增强</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A9%E5%81%9C%E6%B3%95early-stopping"><span class="nav-number">6.6.3.</span> <span class="nav-text"> 早停法（Early Stopping）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%B9%E9%87%8F%E5%BD%92%E4%B8%80%E5%8C%96-2"><span class="nav-number">6.6.4.</span> <span class="nav-text"> 批量归一化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-2"><span class="nav-number">6.6.5.</span> <span class="nav-text"> 总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96"><span class="nav-number">6.7.</span> <span class="nav-text"> 其他</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E4%B8%AD%E7%9A%84%E5%BC%A0%E9%87%8F"><span class="nav-number">6.7.1.</span> <span class="nav-text"> 网络中的张量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%AD%E4%BB%A3iteration%E4%B8%8E%E8%BD%AE%E6%AC%A1epoch"><span class="nav-number">6.7.2.</span> <span class="nav-text"> 迭代（iteration）与轮次（epoch）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E9%9B%86%E6%88%90"><span class="nav-number">6.7.3.</span> <span class="nav-text"> 模型集成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0"><span class="nav-number">6.7.4.</span> <span class="nav-text"> 迁移学习</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
