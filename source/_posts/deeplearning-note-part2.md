@@ -109,23 +109,40 @@ LSTM 的计算图顶部有一条方便梯度传播的“高速公路”，类似
 
 ![many2one](deeplearning-note-part2/many2one.png)
 
-### many to many RNN：
+### 多对多：
 
 对于多对多的情况，我们在每一个时间步都计算一个$y_t$和对应的损失。最后，我们只需将所有时间步的损失相加，并将其作为整个网络的总损失。
 ![many2many](deeplearning-note-part2/many2many.png)
 
-### 序列对序列
+### 序列到序列
 
 对于机器翻译这种序列到序列(seq2seq)、(many to many)的问题，可以将一个编码器（encoder, many to one）和一个解码器(decoder,one to many)的 RNN 接起来, 它们有各自单独的权重。
 
-编码器:
+编码器:处理输入数据 $[x_1, x_2, x_3, ...]$。整个输入序列的信息压缩到**上下文向量**(Context Vector)中，通常设为最后一个隐藏状态$h_T$。
 
-1. 处理输入数据 $[x_1, x_2, x_3, ...]$
-2. 整个输入序列的信息压缩如最后一个隐藏状态 $h_T$ 中，该隐藏状态称为**上下文向量**(Context Vector)
-
-解码器:
-
-1. $h_T$ 作为解码器的初始隐藏向量
-2. 每一步的输入数据为上一步的输出 $y_i$，由于 decoder 中的第一步没有上一个输出 y，所以通常直接指定为 \<start\>。当 decoder 输出采样到\<end\>表示结束。
+解码器:$h_T$ 作为解码器的初始隐藏向量。 每一步的输出作为下一步的输入。第一步输入通常直接指定为 \<start\>。当 decoder 输出采样到\<end\>表示结束。
 
 ![seq2seq](deeplearning-note-part2/seq2seq.png)
+
+# 注意力机制
+
+## RNN with attention
+
+![序列到序列RNN模型问题](deeplearning-note-part2/seq2seqprob.png)
+在之前[序列到序列](#序列对序列)的网络中，所有信息被压缩到**上下文向量**中，当输入比较长时候，这个向量不能够表示所有信息。可以将注意力机制用于这一模型,在每一步产生一个上下文向量。在每一步，解码器“注意”输入序列的不同部分。
+
+计算过程如下：
+![序列到序列RNN模型加注意力](deeplearning-note-part2/RNNwithattention.png)
+
+1. 在每一步中，使用当前解码器状态$s_{t-1}$和每一个编码器的隐藏状态，计算出每个隐藏状态的对齐分数。可以用 MLP 计算。
+2. 使用 softmax 得到概率分布，也就是注意力权重$a_{t,i}$。
+3. 这一步的上下文变量 $c_{t}$ 是隐藏状态 $h_i$ 的线性组合。$\begin{array} {l} {\mathbf{c_{t}}=\Sigma_{\mathbf{i}} \mathbf{a_{t, i}} \mathbf{h_{i}}} \\ \end{array}$
+4. 在编码器中使用这个上下文变量 $c_{t}$ 和输入计算出解码器下一个状态$s_{t}$
+
+## CNN with attention
+
+在利用 CNN 给图片加标注时候也可以使用注意力机制，每次看图片中不同的地方。
+使用解码器当前状态和 CNN 得到的**特征图**也可以计算类似的对齐分数、注意力权重。
+![图片标注加注意力机制](deeplearning-note-part2/CNNwithattention.png)
+
+## 注意力层
