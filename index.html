@@ -183,7 +183,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2025-04-20 22:34:54" itemprop="dateModified" datetime="2025-04-20T22:34:54+08:00">2025-04-20</time>
+                <time title="Modified: 2025-04-23 12:05:54" itemprop="dateModified" datetime="2025-04-23T12:05:54+08:00">2025-04-23</time>
               </span>
 
           
@@ -284,6 +284,49 @@
 使用解码器当前状态和 CNN 得到的<strong>特征图</strong>也可以计算类似的对齐分数、注意力权重。<br />
 <img src="/2025/04/10/deeplearning-note-part2/CNNwithattention.png" alt="图片标注加注意力机制" /></p>
 <h2 id="注意力层"><a class="markdownIt-Anchor" href="#注意力层"></a> 注意力层</h2>
+<p>可以将以上的注意力机制泛化，抽象出<strong>注意力层</strong>。<br />
+<img src="/2025/04/10/deeplearning-note-part2/attentionlayer1.png" alt="注意力层1" /></p>
+<p>query vectors 是一系列的查询向量，是想要查找的东西。每个查询向量相当于之前解码器的一个隐藏状态。</p>
+<p>input vectors 相当于原来编码器的所有隐藏状态。</p>
+<p>之前使用<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>f</mi><mrow><mi>a</mi><mi>t</mi><mi>t</mi></mrow></msub></mrow><annotation encoding="application/x-tex">f_{att}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2805559999999999em;"><span style="top:-2.5500000000000003em;margin-left:-0.10764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">a</span><span class="mord mathnormal mtight">t</span><span class="mord mathnormal mtight">t</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>计算 query vectors 和 input vector 之间的相似性，但使用点乘效果就很好。</p>
+<p>之后同样使用 softmax 函数计算出<strong>注意力权重</strong>后线性组合输入向量得到输出向量。</p>
+<blockquote>
+<p><strong>放缩</strong>：实际计算相似性时通常要以因子<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msqrt><msub><mi>D</mi><mi>Q</mi></msub></msqrt></mrow><annotation encoding="application/x-tex">\sqrt{D_Q}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.24em;vertical-align:-0.35638900000000007em;"></span><span class="mord sqrt"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8836109999999999em;"><span class="svg-align" style="top:-3.2em;"><span class="pstrut" style="height:3.2em;"></span><span class="mord" style="padding-left:1em;"><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.328331em;"><span style="top:-2.5500000000000003em;margin-left:-0.02778em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">Q</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span><span style="top:-2.843611em;"><span class="pstrut" style="height:3.2em;"></span><span class="hide-tail" style="min-width:1.02em;height:1.28em;"><svg width='400em' height='1.28em' viewBox='0 0 400000 1296' preserveAspectRatio='xMinYMin slice'><path d='M263,681c0.7,0,18,39.7,52,119
+c34,79.3,68.167,158.7,102.5,238c34.3,79.3,51.8,119.3,52.5,120
+c340,-704.7,510.7,-1060.3,512,-1067
+l0 -0
+c4.7,-7.3,11,-11,19,-11
+H40000v40H1012.3
+s-271.3,567,-271.3,567c-38.7,80.7,-84,175,-136,283c-52,108,-89.167,185.3,-111.5,232
+c-22.3,46.7,-33.8,70.3,-34.5,71c-4.7,4.7,-12.3,7,-23,7s-12,-1,-12,-1
+s-109,-253,-109,-253c-72.7,-168,-109.3,-252,-110,-252c-10.7,8,-22,16.7,-34,26
+c-22,17.3,-33.3,26,-34,26s-26,-26,-26,-26s76,-59,76,-59s76,-60,76,-60z
+M1001 80h400000v40h-400000z'/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.35638900000000007em;"><span></span></span></span></span></span></span></span></span>放缩防止梯度消失。因为点积的值随着向量维度的增加而变得越来越大。而后续经过 softmax 处理时，会产生几乎全是 0，只有一个接近 1 的分布。这会导致梯度变得非常小。</p>
+</blockquote>
+<p>在整个过程中，输入向量有两个功能：</p>
+<ol>
+<li>与查询向量相乘得到相似分数。</li>
+<li>与注意力权重线性组合得到输出向量。</li>
+</ol>
+<p><img src="/2025/04/10/deeplearning-note-part2/attentionlayer2.png" alt="注意力层2" /></p>
+<p>可以拆出两个新的向量组分别实现这两个功能。通常会将输出向量<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>X</mi></mrow><annotation encoding="application/x-tex">X</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.07847em;">X</span></span></span></span>与两个可学习权重矩阵<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>W</mi><mi>k</mi></msub></mrow><annotation encoding="application/x-tex">W_k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">W</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>和<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>W</mi><mi>v</mi></msub></mrow><annotation encoding="application/x-tex">W_v</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">W</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03588em;">v</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>相乘得到 key vectors 和 value vectors 来 <strong>分别</strong> 完成功能 1 和功能 2 。</p>
+<p>每个 Query 向量都会产生一个对应的输出向量。每个 Query 都在问“我该关注输入中的哪些部分？”，然后根据 Key/Value 得到一个“回答”——对应的输出向量。</p>
+<h2 id="自注意力层"><a class="markdownIt-Anchor" href="#自注意力层"></a> 自注意力层</h2>
+<p>以上的输入是两组向量 query vectors 和 input vectors。自注意力层中只有一组 input vectors。</p>
+<p><img src="/2025/04/10/deeplearning-note-part2/selfattentionlayer.png" alt="自注意力层" /></p>
+<p>自注意力层通过一个可学习的权重矩阵<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>W</mi><mi>Q</mi></msub></mrow><annotation encoding="application/x-tex">W_Q</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">W</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.328331em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">Q</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span>把 input vectors 转换为 query vectors。<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>W</mi><mi>k</mi></msub></mrow><annotation encoding="application/x-tex">W_k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">W</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>和<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>W</mi><mi>v</mi></msub></mrow><annotation encoding="application/x-tex">W_v</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">W</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.03588em;">v</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>矩阵和上面相同。</p>
+<p>自注意力层输入一组向量，输出一组向量。但是自注意力层不知道向量间的顺序，以某种顺序互换输入向量，输出向量也会以同样顺序互换。<br />
+<img src="/2025/04/10/deeplearning-note-part2/selfattentionlayerpermutation.png" alt="自注意力层顺序" /></p>
+<p>在某些场景中，为了能让自注意力层意识到向量间的顺序，会在输入向量中拼接**<em>位置编码</em>**。</p>
+<h2 id="掩码自注意力层"><a class="markdownIt-Anchor" href="#掩码自注意力层"></a> 掩码自注意力层</h2>
+<p>在语言模型中，比如生成一段文字时候，模型应该只能使用过去的信息，不能提前查看后面的答案。</p>
+<p>输出向量<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Y</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">Y_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">Y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.22222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>,应该只能使用输入向量<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>X</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">X_1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07847em;">X</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.07847em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>和<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>X</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">X_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07847em;">X</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.07847em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>。可以通过调整注意力权重来遮盖后面的向量。</p>
+<p><img src="/2025/04/10/deeplearning-note-part2/maskedselfattentionlayer.png" alt="掩码自注意力层" /></p>
+<h2 id="多头自注意力层"><a class="markdownIt-Anchor" href="#多头自注意力层"></a> 多头自注意力层</h2>
+<p><img src="/2025/04/10/deeplearning-note-part2/multiheadselfattentionlayer.png" alt="多头自注意力层" /></p>
+<p>在实践中，多头自注意力层经常被使用。</p>
+<p>对于一组输入向量，把这组向量在特征维度上拆分成<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>H</mi></mrow><annotation encoding="application/x-tex">H</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span></span></span></span>段，分别输入到<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>H</mi></mrow><annotation encoding="application/x-tex">H</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span></span></span></span>个独立的自注意力层中。每个<strong>注意力头</strong>会并行地处理信息，将输出的<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>H</mi></mrow><annotation encoding="application/x-tex">H</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span></span></span></span>组向量在特征维度上进行拼接，就可以得到最后的输出向量。</p>
+<p>多头自注意力层的超参数包括 Query dimension <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>D</mi><mi>Q</mi></msub></mrow><annotation encoding="application/x-tex">D_Q</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.328331em;"><span style="top:-2.5500000000000003em;margin-left:-0.02778em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">Q</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span>和注意力头个数<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>H</mi></mrow><annotation encoding="application/x-tex">H</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span></span></span></span>。</p>
 
       
     </div>
@@ -334,7 +377,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2025-04-17 15:50:11" itemprop="dateModified" datetime="2025-04-17T15:50:11+08:00">2025-04-17</time>
+                <time title="Modified: 2025-04-21 16:39:23" itemprop="dateModified" datetime="2025-04-21T16:39:23+08:00">2025-04-21</time>
               </span>
 
           
@@ -650,8 +693,16 @@ GPU 少按以下方法选择：</p>
 <p><img src="/2025/03/29/deeplearning-note-part1/regularizationsummary.png" alt="正则化总结" /></p>
 <h2 id="其他"><a class="markdownIt-Anchor" href="#其他"></a> 其他</h2>
 <h3 id="网络中的张量"><a class="markdownIt-Anchor" href="#网络中的张量"></a> 网络中的张量</h3>
+<h4 id="logits"><a class="markdownIt-Anchor" href="#logits"></a> logits</h4>
+<p>logits 是神经网络最后一层输出、在激活函数之前的值。</p>
+<ul>
+<li>多分类任务：用 softmax 把 logits 转换成概率分布。</li>
+<li>二分类任务：用 sigmoid 作用在单个 logit 上，输出一个 0~1 之间的概率</li>
+</ul>
+<p>PyTorch 中的很多损失函数（如 BCEWithLogitsLoss，CrossEntropyLoss）都内置了数值稳定的版本，它们要求输入 logits 而不是概率。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"></span><br><span class="line">loss_fn = nn.BCEWithLogitsLoss()  <span class="comment"># expects logits</span></span><br><span class="line">logits = model(x)  <span class="comment"># model 不要加 sigmoid</span></span><br><span class="line">loss = loss_fn(logits, targets)   <span class="comment"># loss 函数内部自动处理数值稳定的 sigmoid 和 log 运算</span></span><br></pre></td></tr></table></figure>
+<h4 id="张量形状"><a class="markdownIt-Anchor" href="#张量形状"></a> 张量形状</h4>
 <p>参数的梯度表示的是损失函数对该参数的偏导数，参数的梯度的 shape 与参数本身的 shape 是一般是<strong>一样</strong>的，这样在更新参数时才可以逐元素地进行更新。</p>
-<p>常见的层包括:</p>
 <ol>
 <li>
 <p>全连接层（Linear / Dense）</p>
@@ -706,6 +757,35 @@ GPU 少按以下方法选择：</p>
 </ol>
 <p>通常在 Imagenet 上预训练模型，在运用到下游任务上可以取得不错的效果。</p>
 <p><img src="/2025/03/29/deeplearning-note-part1/transferlearning.png" alt="迁移学习" /></p>
+<h3 id="消融实验"><a class="markdownIt-Anchor" href="#消融实验"></a> 消融实验</h3>
+<p>消融实验的基本思路是：“逐个移除或修改模型中的某个组件、模块、特征或机制，观察其对模型性能的影响。”</p>
+<p>消融实验的结果通常会以表格形式展示：</p>
+<table>
+<thead>
+<tr>
+<th>模型版本</th>
+<th style="text-align:center">准确率（Accuracy）</th>
+<th style="text-align:center">F1 分数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>完整模型</td>
+<td style="text-align:center">92.5%</td>
+<td style="text-align:center">0.91</td>
+</tr>
+<tr>
+<td>去掉注意力模块</td>
+<td style="text-align:center">89.3%</td>
+<td style="text-align:center">0.87</td>
+</tr>
+<tr>
+<td>去掉多尺度融合</td>
+<td style="text-align:center">90.1%</td>
+<td style="text-align:center">0.88</td>
+</tr>
+</tbody>
+</table>
 
       
     </div>
