@@ -146,3 +146,58 @@ LSTM 的计算图顶部有一条方便梯度传播的“高速公路”，类似
 ![图片标注加注意力机制](deeplearning-note-part2/CNNwithattention.png)
 
 ## 注意力层
+
+可以将以上的注意力机制泛化，抽象出**注意力层**。
+![注意力层1](deeplearning-note-part2/attentionlayer1.png)
+
+query vectors 是一系列的查询向量，是想要查找的东西。每个查询向量相当于之前解码器的一个隐藏状态。
+
+input vectors 相当于原来编码器的所有隐藏状态。
+
+之前使用$f_{att}$计算 query vectors 和 input vector 之间的相似性，但使用点乘效果就很好。
+
+之后同样使用 softmax 函数计算出**注意力权重**后线性组合输入向量得到输出向量。
+
+> **放缩**：实际计算相似性时通常要以因子$\sqrt{D_Q}$放缩防止梯度消失。因为点积的值随着向量维度的增加而变得越来越大。而后续经过 softmax 处理时，会产生几乎全是 0，只有一个接近 1 的分布。这会导致梯度变得非常小。
+
+在整个过程中，输入向量有两个功能：
+
+1. 与查询向量相乘得到相似分数。
+2. 与注意力权重线性组合得到输出向量。
+
+![注意力层2](deeplearning-note-part2/attentionlayer2.png)
+
+可以拆出两个新的向量组分别实现这两个功能。通常会将输出向量$X$与两个可学习权重矩阵$W_k$和$W_v$相乘得到 key vectors 和 value vectors 来 **分别** 完成功能 1 和功能 2 。
+
+每个 Query 向量都会产生一个对应的输出向量。每个 Query 都在问“我该关注输入中的哪些部分？”，然后根据 Key/Value 得到一个“回答”——对应的输出向量。
+
+## 自注意力层
+
+以上的输入是两组向量 query vectors 和 input vectors。自注意力层中只有一组 input vectors。
+
+![自注意力层](deeplearning-note-part2/selfattentionlayer.png)
+
+自注意力层通过一个可学习的权重矩阵$W_Q$把 input vectors 转换为 query vectors。$W_k$和$W_v$矩阵和上面相同。
+
+自注意力层输入一组向量，输出一组向量。但是自注意力层不知道向量间的顺序，以某种顺序互换输入向量，输出向量也会以同样顺序互换。
+![自注意力层顺序](deeplearning-note-part2/selfattentionlayerpermutation.png)
+
+在某些场景中，为了能让自注意力层意识到向量间的顺序，会在输入向量中拼接**_位置编码_**。
+
+## 掩码自注意力层
+
+在语言模型中，比如生成一段文字时候，模型应该只能使用过去的信息，不能提前查看后面的答案。
+
+输出向量$Y_2$,应该只能使用输入向量$X_1$和$X_2$。可以通过调整注意力权重来遮盖后面的向量。
+
+![掩码自注意力层](deeplearning-note-part2/maskedselfattentionlayer.png)
+
+## 多头自注意力层
+
+![多头自注意力层](deeplearning-note-part2/multiheadselfattentionlayer.png)
+
+在实践中，多头自注意力层经常被使用。
+
+对于一组输入向量，把这组向量在特征维度上拆分成$H$段，分别输入到$H$个独立的自注意力层中。每个**注意力头**会并行地处理信息，将输出的$H$组向量在特征维度上进行拼接，就可以得到最后的输出向量。
+
+多头自注意力层的超参数包括 Query dimension $D_Q$和注意力头个数$H$。

@@ -502,9 +502,27 @@ Resnet 以后，现在通常只用 l2 正则、batch normalization 和数据增�
 
 ### 网络中的张量
 
-参数的梯度表示的是损失函数对该参数的偏导数，参数的梯度的 shape 与参数本身的 shape 是一般是**一样**的，这样在更新参数时才可以逐元素地进行更新。
+#### logits
 
-常见的层包括:
+logits 是神经网络最后一层输出、在激活函数之前的值。
+
+-   多分类任务：用 softmax 把 logits 转换成概率分布。
+-   二分类任务：用 sigmoid 作用在单个 logit 上，输出一个 0~1 之间的概率
+
+PyTorch 中的很多损失函数（如 BCEWithLogitsLoss，CrossEntropyLoss）都内置了数值稳定的版本，它们要求输入 logits 而不是概率。
+
+```python
+import torch
+import torch.nn as nn
+
+loss_fn = nn.BCEWithLogitsLoss()  # expects logits
+logits = model(x)  # model 不要加 sigmoid
+loss = loss_fn(logits, targets)   # loss 函数内部自动处理数值稳定的 sigmoid 和 log 运算
+```
+
+#### 张量形状
+
+参数的梯度表示的是损失函数对该参数的偏导数，参数的梯度的 shape 与参数本身的 shape 是一般是**一样**的，这样在更新参数时才可以逐元素地进行更新。
 
 1. 全连接层（Linear / Dense）
 
@@ -553,3 +571,14 @@ for epoch in range(num_epochs):        # 外层是 epoch
 通常在 Imagenet 上预训练模型，在运用到下游任务上可以取得不错的效果。
 
 ![迁移学习](deeplearning-note-part1/transferlearning.png)
+
+### 消融实验
+
+消融实验的基本思路是：“逐个移除或修改模型中的某个组件、模块、特征或机制，观察其对模型性能的影响。”
+
+消融实验的结果通常会以表格形式展示：
+模型版本 | 准确率（Accuracy） | F1 分数
+| --- | :-----------:| :---: |
+完整模型 | 92.5% | 0.91
+去掉注意力模块 | 89.3% | 0.87
+去掉多尺度融合 | 90.1% | 0.88
