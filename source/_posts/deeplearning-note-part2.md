@@ -205,7 +205,7 @@ input vectors 相当于原来编码器的所有隐藏状态。
 ## CNN with self-attention
 
 可以使用 CNN 结合自注意力模块处理图像。
-![CNN with self-attention](deeplearning-note-part2\CNNwithself-attention.png)
+![CNN with self-attention](deeplearning-note-part2/CNNwithselfattention.png)
 
 图像经过 CNN 处理生成**特征向量的网格**，将之视为之前的输入向量组可以得到**输出向量**。
 
@@ -248,3 +248,17 @@ Transformer 块的输入是一组向量，首先经过自注意力层处理（�
 Transformer 模型是一系列的 Transformer 块。
 
 在论文[Attention is all you need](https://arxiv.org/abs/1706.03762)中编码器和解码器均由 6 个 Transformer 块构成，模型总维度为 512，自注意力层中有 6 个头。
+
+# 网络可视化
+
+CNN 中的第一层卷积层可以通过 RGB 图像可视化，它通常学习边缘、颜色信息。后续层不好进行可视化。可以跳过中间的卷积层，使用最后的全连接层输出的特征向量来进行可视化。
+![特征向量可视化](deeplearning-note-part2/featurevectorknn.png)
+原来对原始像素进行 KNN 分类效果很差，但是对特征向量进行 KNN 分类的话效果很好。红线右侧的图像与最左边的**查询图像**非常相近。
+
+## 维度降低
+
+人们很难理解高维的特征向量，因此可以使用算法在尽量保持高维结构的条件下，把向量维度降低。
+线性的维度降低算法包括 Principal Component Analysis(PCA)
+非线性的维度降低算法包括 t-SNE 算法
+![t-SNE](deeplearning-note-part2\tsne.png)
+这里在对 10 个数字进行分类的问题中使用 t-SNE 算法把向量维度降低到二维的情况。图中包含 10 个区域的数字。
