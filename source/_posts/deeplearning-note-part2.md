@@ -171,7 +171,7 @@ input vectors 相当于原来编码器的所有隐藏状态。
 
 每个 Query 向量都会产生一个对应的输出向量。每个 Query 都在问“我该关注输入中的哪些部分？”，然后根据 Key/Value 得到一个“回答”——对应的输出向量。
 
-## 自注意力层
+### 自注意力层
 
 以上的输入是两组向量 query vectors 和 input vectors。自注意力层中只有一组 input vectors。
 
@@ -182,9 +182,9 @@ input vectors 相当于原来编码器的所有隐藏状态。
 自注意力层输入一组向量，输出一组向量。但是自注意力层不知道向量间的顺序，以某种顺序互换输入向量，输出向量也会以同样顺序互换。
 ![自注意力层顺序](deeplearning-note-part2/selfattentionlayerpermutation.png)
 
-在某些场景中，为了能让自注意力层意识到向量间的顺序，会在输入向量中拼接**_位置编码_**。
+在某些场景中，为了能让自注意力层意识到向量间的顺序，会在输入向量中拼接 _**位置编码**_ 。
 
-## 掩码自注意力层
+### 掩码自注意力层
 
 在语言模型中，比如生成一段文字时候，模型应该只能使用过去的信息，不能提前查看后面的答案。
 
@@ -192,7 +192,7 @@ input vectors 相当于原来编码器的所有隐藏状态。
 
 ![掩码自注意力层](deeplearning-note-part2/maskedselfattentionlayer.png)
 
-## 多头自注意力层
+### 多头自注意力层
 
 ![多头自注意力层](deeplearning-note-part2/multiheadselfattentionlayer.png)
 
@@ -200,4 +200,51 @@ input vectors 相当于原来编码器的所有隐藏状态。
 
 对于一组输入向量，把这组向量在特征维度上拆分成$H$段，分别输入到$H$个独立的自注意力层中。每个**注意力头**会并行地处理信息，将输出的$H$组向量在特征维度上进行拼接，就可以得到最后的输出向量。
 
-多头自注意力层的超参数包括 Query dimension $D_Q$和注意力头个数$H$。
+多头自注意力层的超参数包括模型总维度（输入/输出的向量总维度）和注意力头个数$H$。
+
+## CNN with self-attention
+
+可以使用 CNN 结合自注意力模块处理图像。
+![CNN with self-attention](deeplearning-note-part2\CNNwithself-attention.png)
+
+图像经过 CNN 处理生成**特征向量的网格**，将之视为之前的输入向量组可以得到**输出向量**。
+
+通常会在最后加一个 1x1 的卷积并加入残差连接。
+
+## 序列的处理方式
+
+有三种处理序列的方式。
+
+-   RNN
+    -   优点：适合处理长序列。最后隐藏状态取决于整个序列。
+    -   缺点：需要依次处理，不能够并行化处理。
+-   一维卷积：每个输出元素是输入信号中一个局部区域与卷积核进行加权求和的结果。
+    -   优点：易于并行化处理。
+    -   缺点： 由于感受野的存在，需要多个卷积层单个输出才能看到整个输入序列。
+-   自注意力机制
+    -   优点：适合处理长序列（每个输出向量取决于**所有**输入向量）。易于并行化处理。
+    -   缺点：需要大量 GPU 内存。
+
+![三种序列的处理方式](deeplearning-note-part2/waystoprocessseq.png)
+
+实际用神经网络处理序列时候，仅需要自注意力机制:Attention is all you need.通过 Transformer 来实现。
+
+## The Transformer
+
+### Transformer 块
+
+![Transformer块](deeplearning-note-part2/Transformerblock.png)
+
+Transformer 块的输入是一组向量，首先经过自注意力层处理（通常包含多个注意力头），在该过程中，所有向量相互交互，每个输出向量都会根据所有输入向量计算得出。自注意力层是 Transformer 块中唯一实现向量间交互的模块。
+
+为了稳定训练过程并促进模型优化，自注意力层的输出会经过残差连接和层归一化。得到的向量随后输入至前馈神经网络（通常由两个全连接层和一个非线性激活函数组成），这一过程作用于每个向量独立进行，不涉及向量间的交互。
+
+前馈层的输出同样通过残差连接与层归一化，形成该 Transformer 块的最终输出。
+
+> 输出向量个数等于输入向量个数，但维度可能改变。
+
+### Transformer 模型
+
+Transformer 模型是一系列的 Transformer 块。
+
+在论文[Attention is all you need](https://arxiv.org/abs/1706.03762)中编码器和解码器均由 6 个 Transformer 块构成，模型总维度为 512，自注意力层中有 6 个头。
