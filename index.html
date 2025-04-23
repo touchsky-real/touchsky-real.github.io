@@ -183,7 +183,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2025-04-23 16:28:30" itemprop="dateModified" datetime="2025-04-23T16:28:30+08:00">2025-04-23</time>
+                <time title="Modified: 2025-04-23 22:14:04" itemprop="dateModified" datetime="2025-04-23T22:14:04+08:00">2025-04-23</time>
               </span>
 
           
@@ -329,7 +329,7 @@ M1001 80h400000v40h-400000z'/></svg></span></span></span><span class="vlist-s">�
 <p>多头自注意力层的超参数包括模型总维度（输入/输出的向量总维度）和注意力头个数<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>H</mi></mrow><annotation encoding="application/x-tex">H</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.08125em;">H</span></span></span></span>。</p>
 <h2 id="cnn-with-self-attention"><a class="markdownIt-Anchor" href="#cnn-with-self-attention"></a> CNN with self-attention</h2>
 <p>可以使用 CNN 结合自注意力模块处理图像。<br />
-<img src="deeplearning-note-part2%5CCNNwithself-attention.png" alt="CNN with self-attention" /></p>
+<img src="/2025/04/10/deeplearning-note-part2/CNNwithselfattention.png" alt="CNN with self-attention" /></p>
 <p>图像经过 CNN 处理生成<strong>特征向量的网格</strong>，将之视为之前的输入向量组可以得到<strong>输出向量</strong>。</p>
 <p>通常会在最后加一个 1x1 的卷积并加入残差连接。</p>
 <h2 id="序列的处理方式"><a class="markdownIt-Anchor" href="#序列的处理方式"></a> 序列的处理方式</h2>
@@ -368,6 +368,16 @@ M1001 80h400000v40h-400000z'/></svg></span></span></span><span class="vlist-s">�
 <h3 id="transformer-模型"><a class="markdownIt-Anchor" href="#transformer-模型"></a> Transformer 模型</h3>
 <p>Transformer 模型是一系列的 Transformer 块。</p>
 <p>在论文<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1706.03762">Attention is all you need</a>中编码器和解码器均由 6 个 Transformer 块构成，模型总维度为 512，自注意力层中有 6 个头。</p>
+<h1 id="网络可视化"><a class="markdownIt-Anchor" href="#网络可视化"></a> 网络可视化</h1>
+<p>CNN 中的第一层卷积层可以通过 RGB 图像可视化，它通常学习边缘、颜色信息。后续层不好进行可视化。可以跳过中间的卷积层，使用最后的全连接层输出的特征向量来进行可视化。<br />
+<img src="/2025/04/10/deeplearning-note-part2/featurevectorknn.png" alt="特征向量可视化" /><br />
+原来对原始像素进行 KNN 分类效果很差，但是对特征向量进行 KNN 分类的话效果很好。红线右侧的图像与最左边的<strong>查询图像</strong>非常相近。</p>
+<h2 id="维度降低"><a class="markdownIt-Anchor" href="#维度降低"></a> 维度降低</h2>
+<p>人们很难理解高维的特征向量，因此可以使用算法在尽量保持高维结构的条件下，把向量维度降低。<br />
+线性的维度降低算法包括 Principal Component Analysis(PCA)<br />
+非线性的维度降低算法包括 t-SNE 算法<br />
+<img src="deeplearning-note-part2%5Ctsne.png" alt="t-SNE" /><br />
+这里在对 10 个数字进行分类的问题中使用 t-SNE 算法把向量维度降低到二维的情况。图中包含 10 个区域的数字。</p>
 
       
     </div>
