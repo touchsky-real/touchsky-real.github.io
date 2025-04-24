@@ -259,6 +259,110 @@ CNN 中的第一层卷积层可以通过 RGB 图像可视化，它通常学习�
 
 人们很难理解高维的特征向量，因此可以使用算法在尽量保持高维结构的条件下，把向量维度降低。
 线性的维度降低算法包括 Principal Component Analysis(PCA)
+
+> PCA 的思想很直观, 假设我们要将 n 维特征映射到 k 维, 第一维选择原始数据中方差最大的维度, 第二维选取是与第一维正交的"平面"中方差最大的维度, 依次得到 k 维。
+
 非线性的维度降低算法包括 t-SNE 算法
-![t-SNE](deeplearning-note-part2\tsne.png)
+![t-SNE](deeplearning-note-part2/tsne.png)
 这里在对 10 个数字进行分类的问题中使用 t-SNE 算法把向量维度降低到二维的情况。图中包含 10 个区域的数字。
+
+# 目标检测
+
+在目标检测任务中，输入一张 RGB 图像, 输出一系列检测到的目标, 预测到的每个目标包含标签以及一个边界框(bounding box)。边界框朝向通常和图像一致。
+
+目标检测任务需要更高分辨率的图像，通常是 3*800*600。
+
+## 检测单个目标
+
+检测单个目标比较简单，将图片经过 CNN 处理后，对特征向量分为两路处理。一路可以使用 softmax loss 函数预测类别。另一路使用 l2 loss 预测边界框的位置。总的 loss 是两个 loss 函数的加权和。类似的这样一个模型完成多个任务，每个任务使用一个 loss 函数的情况叫做**multitask loss**
+![检测单个目标](deeplearning-note-part2/detectsingleobject.png)
+
+> Softmax Loss（通常指 Softmax + Cross-Entropy Loss）适用于分类任务。
+>
+> $$
+> \mathrm{C r o s s E n t r o p y L o s s}=-\sum_{i=1}^{C} y_{i} \operatorname{l o g} ( \hat{y}_{i} )
+> $$
+>
+> 其中$y_i$是真实的 one-hot 标签， $\hat{y_i}
+$是 softmax 输出的预测概率
+>
+> L2 Loss（又叫 Mean Squared Error，MSE）适用于回归任务。
+>
+> $$
+> \mathrm{L 2 ~ L o s s}=\frac{1} {n} \sum_{i=1}^{n} ( y_{i}-\hat{y}_{i} )^{2}
+> $$
+
+但是，图像中可能有多个目标。
+
+## R-CNN
+
+2014 年提出的[R-CNN](https://arxiv.org/abs/1311.2524)能够完成多目标检测的任务。
+RCNN 中，首先通过候选区域提取算法（如 Selective Search）筛选出大概 2000 个可能包含目标的区域，再将这些区域裁剪为 224\*224 固定大小的图像。对于每个区域，单独使用 CNN 计算给出分类和边界框。
+
+> 衡量模型预测边界框和真实边界框的准确度使用交并比(Intersection over Union,IoU)。将边界框的交集(预测框与基准框)面积除以并集面积得到 IoU。
+> ![交并比](deeplearning-note-part2/iou.png)
+> IoU > 0.5, 还行; IoU > 0.7, 挺好; IoU > 0.9, 几乎完美
+
+在目标检测任务中，模型往往会在同一个目标的周围生成多个预测框（bounding boxes），可以通过非极大值抑制（Non-Maximum Suppression, NMS）处理。NMS 的核心目标是：在多个重叠框中，只保留得分最高的那一个，抑制其他重叠度高的框。
+![非极大值抑制](deeplearning-note-part2/nms.png)
+
+## Fast R-CNN
+
+R-CNN 会因为做 2000 个 CNN 而很慢, 我们可以通过交换**裁剪候选区域**和**CNN**的顺序, 共享一部分计算来提高效率。
+
+![Fast R-CNN](deeplearning-note-part2/fastrcnn.png)
+
+在 Fast R-CNN 中图像先通过 CNN，提取整图的特征图，然后在特征图上提取每个候选区域的特征，通过在特征图上**裁剪候选区域**后（通过 RoI Pooling），每个区域通过一个相对**轻量**的 CNN 网络处理得到结果。。
+
+> RoI Pooling（Region of Interest Pooling）是 Fast R-CNN 引入的一种关键操作，用来从特征图中提取出固定尺寸的候选区域特征，用于后续的分类和回归。
+
+Fast R-CNN 的训练时间能做到 R-CNN 的 1/10, 测试时间为 1/40 左右, 但是大部分时间在算候补区域。作为深度学习的实践者，可以使用 CNN 来提出可能的候选区域。
+
+## Faster R-CNN
+
+Faster R-CNN 引入区域候选网络(Region Proposal Network)(RPN)。
+![Faster R-CNN](deeplearning-note-part2/fasterrcnn.png)
+
+RPN 先想象 backbone network 已经输出了特征图, 有一个固定大小的锚框(anchor box)在特征图上滑动, RPN 其实是在训练一个二分类问题, 即锚框是否包含一个对象。
+![Region Proposal Network](deeplearning-note-part2/rpn.png)
+
+固定大小的框效果很差, 我们还要训练一种边界框变化的参数(box transforms), 把锚框变为边界框(上图黄框)。
+
+> -   单阶段检测器：直接在输入图像上进行类别预测和边界框回归。
+> -   两阶段检测器：先通过 Region Proposal Network 找可能是目标的区域，再精细分类和回归。
+
+## 模型评估
+
+目标检测模型使用平均精度(mean Average Precision)(mAP)来评估,计算流程如下：
+
+1. 在所有测试图像上运行检测器。
+2. 对于每个类别，计算平均精度（AP） ，也就是精度-召回率曲线下的面积。
+    1. 对于每个检测结果（按得分从高到低排序）。如果它与某个真实框（GT）匹配，且 IoU > 0.5，否则将其标记为正例，并移除该真实框。
+    2. 否则，将其标记为负例。
+    3. 在精度-召回率曲线上绘制一个点。
+3. mAP（mean Average Precision） = 所有类别 AP 的平均值。
+
+> -   True Positive (TP)：预测为正, 实际为正(判断正确)
+> -   True Negative (TN)：预测为负, 实际为负(判断正确)
+> -   False Positive (FP)：预测为正, 实际为负(判断错误)
+> -   False Negative (FN)：预测为负, 实际为正(判断错误)
+>
+> **准确率**:
+>
+> $$
+> \mathrm{p}=\mathrm{p r e s i c i o n}={\frac{T P} {T P+F P}},
+> $$
+>
+> 表示在所有预测为是这一类的样本中, 有多少确实是这一类。
+>
+> **召回率**:
+>
+> $$
+> \mathrm{p}=\mathrm{p r e s i c i o n}={\frac{T P} {T P+F P}},
+> $$
+>
+> 表示在所有实际上是这个类的样本中, 有多少被判断出来了
+>
+> 如果让一个已经训练好的模型在测试集上运行一次, 准确度和召回率是确定的, 以横轴为 r, 纵轴为 p 可以画出 PR 曲线(累计形式)
+> ![PR 曲线](deeplearning-note-part2/prcurve.jpg)
+> 目标是获得同时具有高准确度和召回率的分类器, 在图形上的表现是曲线与坐标轴围成的区域面积尽可能大

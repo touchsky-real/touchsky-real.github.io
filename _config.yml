@@ -108,3 +108,6 @@ deploy:
     type: git
     repo: git@github.com:touchsky-real/touchsky-real.github.io.git
     branch: main
+
+# optimize plugin
+all_minifier: true
