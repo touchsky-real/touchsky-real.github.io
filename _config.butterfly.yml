@@ -444,7 +444,7 @@ busuanzi:
 math:
     # Choose: mathjax, katex
     # Leave it empty if you don't need math
-    use: mathjax
+    use: katex
     per_page: true
     hide_scrollbar: false
 
@@ -456,7 +456,7 @@ math:
 
     katex:
         # Enable the copy KaTeX formula
-        copy_tex: false
+        copy_tex: true
 
 # --------------------------------------
 # Search
@@ -799,7 +799,7 @@ beautify:
 # Global font settings
 # Don't modify the following settings unless you know how they work
 font:
-    global_font_size:
+    global_font_size: 16px
     code_font_size:
     font_family: '"PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", "WenQuanYi Micro Hei", sans-serif'
     code_font_family: consolas, Menlo, "PingFang SC", "Microsoft JhengHei", "Microsoft YaHei", sans-serif

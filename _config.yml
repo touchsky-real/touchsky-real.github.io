@@ -109,12 +109,7 @@ deploy:
 # optimize plugin
 all_minifier: true
 
-# mathjax configure in butterf;y theme
-kramed:
-    gfm: true
-    pedantic: false
-    sanitize: false
-    tables: true
-    breaks: true
-    smartLists: true
-    smartypants: true
+# KaTeX configure in butterfly theme
+markdown:
+    plugins:
+        - "@renbaoshuo/markdown-it-katex"
