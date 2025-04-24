@@ -5,10 +5,10 @@
 # Site
 title: Touchsky's blog
 subtitle: ""
-description: "此网站用来记录我的学习笔记和遇到的技术问题。"
+description: "学习笔记、技术问题记录"
 keywords:
 author: touchsky
-language: en
+language: zh
 timezone: ""
 
 # URL
@@ -96,13 +96,10 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: next
+theme: butterfly
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
-
-math:
-engine: "katex" # or 'katex'
 
 deploy:
     type: git
@@ -111,3 +108,13 @@ deploy:
 
 # optimize plugin
 all_minifier: true
+
+# mathjax configure in butterf;y theme
+kramed:
+    gfm: true
+    pedantic: false
+    sanitize: false
+    tables: true
+    breaks: true
+    smartLists: true
+    smartypants: true
