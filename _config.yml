@@ -3,12 +3,12 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Touchsky's blog
+title: Touchsky's Blog
 subtitle: ""
 description: "学习笔记、技术问题记录"
 keywords:
 author: touchsky
-language: zh
+language: zh-CN
 timezone: ""
 
 # URL

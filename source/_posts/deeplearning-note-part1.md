@@ -10,7 +10,7 @@ tags:
 ![线性分类器的缺点](deeplearning-note-part1/Linear%20Classifiers%20Problem.png)
 
 解决方法之一：**特征变换**
-![特征变换](deeplearning-note-part1/特征变换.png)
+![特征变换](deeplearning-note-part1/FeatureTransforms.png)
 
 # 优化（Optimization）
 
@@ -234,8 +234,15 @@ stride:下采样，防止网络需要很多层卷积才能获取到输入图片�
 
 问题：网络很难训练。解决方法：归一化
 通常使用 **批量归一化(BatchNorm)** ，使得每一层的输出符合均值为 0，方差为 1 的分布。
-批量归一化最初是为了解决神经网络训练中的“内部协变量偏移（Internal Covariate Shift）”问题,不是专门为了防止过拟合而设计的，但它确实能在一定程度上减少过拟合，这是一种“副作用”。
-批量归一化训练和推理时行为不一致。
+
+采用批量归一化后：
+
+-   允许使用更高的学习率，加快收敛速度
+-   使网络对参数初始化更加鲁棒
+-   在训练过程中具有正则化作用,能在一定程度上减少过拟合。
+-   测试时可以与卷积融合一起计算！
+
+但是批量归一化在训练和推理阶段行为不一致：这是一个非常常见的错误来源。
 训练时：
 ![批量归一化](deeplearning-note-part1/batch%20norm%20in%20train.png)
 推理时：
@@ -333,6 +340,7 @@ Pytoch 的张量操作中有任何一个输入张量的`require_grads`属性为`
 TensorFlow 中的`keras`类似于 pytoch 中的 nn 模块，提供模块级别的抽象。
 
 TensorFlow 中的`tensorboard`很好用，是一个用来追踪网络统计信息的`web server`，pytorch 在`torch.utils.tensorboard`也提供了对 tensorboard 的支持。
+![tensorboard](deeplearning-note-part1/tensorboard.png)
 
 # 网络的训练
 
@@ -482,9 +490,11 @@ Dropout 会以概率 p（通常是 0.5），在每次前向传播中，随机将
 
 ![早停法](deeplearning-note-part1/EarlyStopping.png)
 
-### 批量归一化
+### 归一化
 
-见[卷积网络](#批量归一化)章节中的介绍
+批量归一化见[卷积网络](#批量归一化)章节中的介绍。
+不同的归一化方法：
+![不同的归一化方法](deeplearning-note-part1/differentnorm.png)
 
 ### 总结
 
