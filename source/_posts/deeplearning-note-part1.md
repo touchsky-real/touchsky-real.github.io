@@ -1,7 +1,7 @@
 ---
 title: 深度学习笔记(第一部分)
 date: 2025-03-29 20:59:13
-tags:
+tags: 深度学习
 ---
 
 # 线性分类器（Linear Classifiers）
