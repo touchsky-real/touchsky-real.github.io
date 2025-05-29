@@ -282,7 +282,7 @@ CNN 中的第一层卷积层可以通过 RGB 图像可视化，它通常学习**
 > Softmax Loss（通常指 Softmax + Cross-Entropy Loss）适用于分类任务。
 >
 > $$
-> \mathrm{C r o s s E n t r o p y L o s s}=-\sum_{i=1}^{C} y_{i} \operatorname{l o g} ( \hat{y}_{i} )
+> \mathrm{CrossEntropyLoss}=-\sum_{i=1}^{C} y_{i} \operatorname{l g} ( \hat{y}_{i} )
 > $$
 >
 > 其中$y_i$是真实的 one-hot 标签， $\hat{y_i}
@@ -291,7 +291,7 @@ $是 softmax 输出的预测概率
 > L2 Loss（又叫 Mean Squared Error，MSE）适用于回归任务。
 >
 > $$
-> \mathrm{L 2 ~ L o s s}=\frac{1} {n} \sum_{i=1}^{n} ( y_{i}-\hat{y}_{i} )^{2}
+> \mathrm{L 2 ~ Loss}=\frac{1} {n} \sum_{i=1}^{n} ( y_{i}-\hat{y}_{i} )^{2}
 > $$
 
 但是，图像中可能有多个目标。
@@ -367,7 +367,7 @@ Faster R-CNN 是两阶段检测器。
 > **准确率**:
 >
 > $$
-> \mathrm{p}=\mathrm{p r e s i c i o n}={\frac{T P} {T P+F P}},
+> \mathrm{p}=\mathrm{p r e s i c i o n}={\frac{TP} {T P+F P}},
 > $$
 >
 > 表示在所有预测中确实正确的比例。
@@ -386,23 +386,150 @@ Faster R-CNN 是两阶段检测器。
 
 # 生成模型
 
-## 监督学习与无监督学习
+## 无监督学习
 
 ![监督学习与无监督学习](deeplearning-note-part2/SupervisedvsUnsupervisedLearning.png)
-目前我们见到的模型都是属于**监督学习**的方式，它的目标是学习数据$x$到标签$y$的**函数映射**。数据集的构建过程中需要人们手动给数据添加标签。
-而**无监督学习**的目标是学习数据中的底层结构，它仅需要数据而不需要手工添加标签。
-常见的无监督学习任务包括**聚类**和**降维**等。
+目前我们见到的模型都是属于**监督学习**的方式，它的目标是学习数据$x$到标签$y$的**函数映射**。数据集包含人们**手动**给数据添加的标签。
+而**无监督学习**的目标是学习数据中的底层结构，它仅需要数据而**不需要**手工添加标签。
+常见的无监督学习任务包括聚类、降维、特征分析(自编码器)、密度估计等。
 
 生成模型可以用于解决无监督学习问题。
 
-## 生成模型和判别模型
+## 模型分类
 
 ![生成模型和判别模型](deeplearning-note-part2/DiscriminativevsGenerativeModels.png)
-不同的模型可以用不同的概率论框架来解释。
+有三种模型：判别模型、生成模型和条件生成模型，不同的模型可以用不同的概率论框架来解释。
 
--   判别模型是给定数据$x$，学习一个标签$y$的条件概率分布$P(x \mid y)$。
--   生成模型是对图像有了深入理解后，学习所有图片的可能出现的概率大小，用分布$p(x)$表示。
--   条件生成模型是对于每个给定的标签$y$，学习在此标签下，所有图片的可能出现的概率大小，用分布$p(x \mid y)$表示。
+-   判别模型是给定数据$x$，学习标签$y$的条件概率分布$P(y \mid x)$。它能够给数据贴标签，在有标签的情况下进行特征学习。
+-   生成模型是对图像有了深入理解后，学习所有可能存在的图片出现的概率大小，用分布$p(x)$表示。它能够可以检测**离群值**（可以设置概率均低于某个阈值的数据为离群值）、在没有标签的情况下进行特征学习、采样生成新的数据。
+-   条件生成模型是对于每个给定的标签$y$，学习所有可能存在的图片出现的概率大小，用分布$p(x \mid y)$表示。它能在标签$y$的条件下生成新的数据。
 
 ![构建条件生成模型](deeplearning-note-part2/conditionalgenerativemodel.png)
 当输入不合理的图片时候，判别模型无法识别。但条件生成模型可以识别。通过贝叶斯公式可以将判别模型和生成模型组合得到条件生成模型。
+
+![生成式模型的主要分类](deeplearning-note-part2/TaxonomyofGenerativeModels.png)
+生成式模型可以分为：
+
+-   具有显式密度函数(能计算 $P(x)$)的模型
+    -   可计算密度模型为数据提供了精确、可计算的概率密度。
+    -   近似密度模型提供了估计或近似的概率密度，通常是因为精确计算是不可行的。
+-   具有隐式密度函数(不能计算 $P(x)$, 但能从$P(x)$中采样)的模型
+
+## 经典模型
+
+### 自回归模型(Autogegressive Model)
+
+自回归模型希望选择能够使得数据集中的数据可能性(likelihood)最大化的网络权重。
+![自回归模型](deeplearning-note-part2/AutoregressiveModel.png)
+假设原始数据$x$由很多小部分(比如图片中的像素)组成
+
+$$
+x=( x_{1}, x_{2}, x_{3},..., x_{T} )
+$$
+
+概率密度函数可以写成一系列条件概率相乘
+
+$$
+p ( x )=p ( x_{1}, x_{2}, x_{3}, \ldots, x_{T} )=p ( x_{1} ) p ( x_{2} | x_{1} ) p ( x_{3} | x_{1}, x_{2} ) \cdots=\prod_{t=1}^{T} p ( x_{t} | x_{1}, \ldots, x_{t-1} )
+$$
+
+这样的形式可以用 RNN([PixelRNN](https://arxiv.org/abs/1601.06759))和卷积网络([PixelCNN](https://arxiv.org/abs/1606.05328))来实现。
+但是自回归模型要对像素一一采样, 生成速度较慢。
+![PixelRNNandPixelCNN](deeplearning-note-part2/PixelRNNandPixelCNN.png)
+
+### 变分自编码器(Variational Autoencoders, VAE)
+
+#### 自编码器(Autoencoders)
+
+变分自编码器是一种自编码器。自编码器是一种无监督学习方法, 旨在学习图像的**特征表示**。
+
+![自编码器](deeplearning-note-part2/Autoencoders.png)
+我们希望通过输入$x$,训练得到**低维**特征$z$, 如果能从$z$中重建出输入$\hat{x}$, 说明特征$z$是有效的。
+从$x \rightarrow z$的过程叫做 encode, 从 $z \rightarrow \hat{x}$的过程叫做 decode。
+我们要训练两个神经网络 encoder 和 decoder, 结合起来就是自编码器, 这里的损失函数是$| | {\hat{x}}-x | |_{2}^{2}$。
+$z$相对于$x$要是低维的, 否则就不能叫做特征了。
+
+训练结束后, 我们就不需要 decoder 了, 而是使用 encoder 提取特征用于下游任务, 它是无监督的学习模型, 不能得到概率密度函数, 所以无法采样生成新图像。
+
+#### 定义
+
+变分自编码器是概率版本的自编码器，它同时能:
+
+1. 从原始数据中学习潜在特征 z。
+2. 从模型中采样以生成新数据。
+
+在普通的 Autoencoder 中, $z$ 是一个确定的映射，这意味着对于每个输入 $x$，模型会输出一个单一的 $z$，这种方式无法表达潜在空间中的不确定性。Variational Autoencoder 不会输出一个确定的潜在表示，而是通过 Probabilistic Encoder 输出关于潜在表示的均值 $\mu$ 和标准差 $\sigma$，随后它会从正态分布中引入一个随机噪声 $\epsilon$ 来得到潜在表示 $z = \mu + \sigma \cdot \epsilon$。潜在表示 $z$ 随后被送入 Probabilistic Decoder 重建 $\hat x$ 并输出关于 $\hat x$ 的均值 $\mu$ 和标准差 $\sigma$。
+
+> Probabilistic Encoder 和 Probabilistic Decoder 都是深度神经网络，它们和一般的 Encoder, Decoder 的区别在于它们输出的不是直接的潜在表示，而是关于潜在表示的均值 $\mu$ 和方差 $\sigma$。
+
+![VAE](deeplearning-note-part2/VAE.png)
+
+VAE 编码器和解码器的输出都是概率分布，它的训练目标是最大化观测数据的对数似然$\operatorname{l o g} p_{\theta} ( x )$，也就是希望模型能够对数据集中的数据点赋予很高的概率。
+根据贝叶斯公式
+
+$$
+p_{\theta} ( x )=\frac{p_{\theta} ( x | z ) p_{\theta} ( z )} {p_{\theta} ( z | x )}
+$$
+
+$p_{\theta} ( x \mid z )$用解码器来计算，$p_{\theta} ( z )$假设为某种简单的高斯先验分布，但是$p_{\theta} ( z | x )$没法计算，可以使用编码器网络来近似$q_{\phi} ( z | x ) \approx p_{\theta} ( z | x )$
+![VAE架构](deeplearning-note-part2/VAEarchitecture.png)
+
+经过复杂推导，数据的对数似然$\operatorname{l o g} p_{\theta} ( x )$可以表示为
+
+$$
+\begin{aligned}
+\log p_{\theta}(x) &= \mathbb{E}_{z \sim q_{\phi}(z|x)} [\log p_{\theta}(x|z)] - D_{KL}(q_{\phi}(z|x) \| p_{\theta}(z)) \\
+&\quad + D_{KL}(q_{\phi}(z|x) \| p_{\theta}(z|x)) \\
+&\geq \mathbb{E}_{z \sim q_{\phi}(z|x)} [\log p_{\theta}(x|z)] - D_{KL}(q_{\phi}(z|x) \| p_{\theta}(z))
+\end{aligned}
+$$
+
+最后一项没法算, 通过使得$q_{\phi} ( z | x ) \approx p_{\theta} ( z | x )$，直接把这一项扔掉，所以不能计算概率密度函数的精确值。但是通过最大化这个下界，也能最大化精确值。
+
+VAE 的损失函数由两部分构成，Reconstruction Loss 和 KL Divergence Loss：
+
+-   Reconstruction Loss: 由于 Probabilistic Decoder 输出的也是均值 $\hat\mu$ 和误差 $\hat \sigma$，可以通过 $\hat x = \hat \mu + \hat \sigma \cdot \hat \epsilon$ 得到 $\hat x$ ($\hat \epsilon$ 来自正态分布)，进而得到 Reconstruction Loss $loss_{recon} = ||x - \hat x||^2$
+-   KL Divergence Loss: $loss_{KL} = \frac{1}{2} \sum i(1 + log \sigma_i^2 - \mu_i^2 - \sigma_i^2)$，用于保证潜在空间的结构合理，保障 VAE 的生成能力
+
+最终的损失函数: $loss_{VAE} = loss_{recon} + \beta loss_{KL}$, $\beta$ 用于调节两者之间的权重。
+
+#### 网络训练与测试
+
+![训练VAE](deeplearning-note-part2/VAEtrain.png)
+训练时：
+先取一个 batch 的输入 x, 跑 encoder 网络后会得到符合隐变量 z 的分布, 用这个分布来算$D_{K L} ( q_{\phi} ( z | x ), p_{\theta} ( z ) )$
+
+然后从预测分布中采样获得 z, 输入到 decoder, 希望采样获得$\hat x$(数据重建), 并计算$E_{z \sim q_{\phi} ( z | x )} [ \log p_{\theta} ( x | z ) ]$
+
+图中蓝色和绿色的部分相互矛盾, 蓝色希望选择 z 使得$\hat x$更接近原始数据, 而绿色部分希望限制 z 满足某种高斯分布。
+
+测试时只需要解码器：
+![测试VAE](deeplearning-note-part2/VAEtest.png)
+
+VAE 的优点是快速, 有丰富的隐变量 z, 缺点是生成的图像有点模糊。
+
+### 生成对抗网络(Generative Adversarial Networks, GAN)
+
+生成对抗网络完全放弃显式建模密度函数, 只关心采样。
+
+假设数据$x_i$来自分布$p_{data} ( x )$, 我们想要训练一个模型可以从$p_{data}$中采样。
+我们引入隐变量$z$, 假设其有先验分布$p_{z}$, 我们采样一些$z$, 将它们传入生成网络$G$中, 使得$x=G ( z )$。
+
+$x$来自分布$p_{G}$，目标是通过训练努力实现$p_{G} = p_{data}$
+
+为了达到这个目标, 我们引入第二个网络——判别器网络(discriminator network), 记作$D$, 它接收来自生成器的样本以及来自数据集的真实样本进行分辨。生成器通过训练来欺骗判别器, 这就是"对抗"。
+如果两个网络都会良好工作, 我们希望$p_{G}$会收敛到$p_{data}$
+
+![生成对抗网络](deeplearning-note-part2/GAN.png)
+目标函数为：
+
+$$
+\underset{G} {\operatorname* {m i n}} \underset{D} {\operatorname* {m a x}} ( E_{X \sim p_{d a t a}} [ \operatorname{l o g} D ( x ) ]+E_{z \sim p ( z )} [ \operatorname{l o g} ( 1-D ( G ( z ) ) ) ] )
+$$
+
+![生成对抗网络损失函数](deeplearning-note-part2/ganloss.png)
+我们用 1/0 表示数据为 真实/虚假生产 的,$D$想要使真实数据$D(x)$输出 1 并且错误数据$D(G(z))$输出 0。
+两个网络的训练相对复杂，训练时候交替对梯度进行更新。
+![GAN网络训练](deeplearning-note-part2/GANtrain.png)
+
+GAN 网络热度很高，有很多改进的论文。

@@ -15,7 +15,7 @@ tags: 深度学习
 # 优化（Optimization）
 
 $$
-w^{*}=\operatorname{a r g} \operatorname* {m i n}_{w} L ( w )
+w^{*}=\operatorname{arg} \operatorname* {min}_{w} L ( w )
 $$
 
 ## SGD
