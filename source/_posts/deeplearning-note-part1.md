@@ -225,9 +225,25 @@ stride:下采样，防止网络需要很多层卷积才能获取到输入图片�
 卷积通常的参数设置：
 ![卷积通常的参数设置](deeplearning-note-part1/convolution%20common%20setting.png)
 
-## 全连接层和 1x1 卷积的区别
+## 全连接层和 1x1 卷积
 
-全连接层可以用来破坏空间结构，比如网络最后一层生成分数。
+### 联系
+
+当只作用在通道维度，且参数在空间维度共享时，1×1 卷积相当于线性层。
+
+```python
+# -------- 测试单个位置 --------
+# conv和linear参数相同
+# 取输入的某个像素点 (batch=0, h=0, w=0)，shape=(3,)
+pixel = x[0, :, 0, 0]   # 通道向量
+out_conv_pixel = conv(x)[0, :, 0, 0]      # 卷积输出该点
+out_linear_pixel = linear(pixel)          # Linear 输出该点
+print("单个像素点结果是否一致:", torch.allclose(out_conv_pixel, out_linear_pixel))
+```
+
+### 区别
+
+全连接层可以用来破坏**空间结构**，比如网络最后一层生成分数。
 1x1 卷积用来调节通道深度。
 
 ## 批量归一化
