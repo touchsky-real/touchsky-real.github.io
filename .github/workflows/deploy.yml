@@ -2,52 +2,56 @@ name: Deploy Hexo Blog
 
 # 触发条件：当 source 分支有变动时
 on:
-  push:
-    branches:
-      - source
+    push:
+        branches:
+            - source
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write # 授予发布权限
+    build-and-deploy:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write # 授予发布权限
 
-    steps:
-    # 1. 拉取代码（核心修改：fetch-depth: 0 和 submodules: recursive）
-    # 这样可以防止某些依赖 Git 信息的插件报错，并确保主题文件夹被正确下载
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-        submodules: recursive
+        steps:
+            # 1. 拉取代码（核心修改：fetch-depth: 0 和 submodules: recursive）
+            # 这样可以防止某些依赖 Git 信息的插件报错，并确保主题文件夹被正确下载
+            - name: Checkout
+              uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+                  submodules: recursive
 
-    # 2. 安装 Node.js 并开启缓存（核心修改：cache: 'npm'）
-    # 这会利用缓存，让后续的部署速度提升 50%
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20' # 推荐使用目前的 LTS 版本
-        cache: 'npm'
+            # 2. 安装 Node.js 并开启缓存（核心修改：cache: 'npm'）
+            # 这会利用缓存，让后续的部署速度提升 50%
+            - name: Setup Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "20" # 推荐使用目前的 LTS 版本
+                  cache: "npm"
 
-    # 3. 安装依赖
-    - name: Install Dependencies
-      run: npm install
+            # 3. 安装依赖
+            - name: Install Dependencies
+              run: npm install
 
-    # 4. 生成静态文件
-    - name: Build
-      run: npx hexo generate
+            # 4. 生成静态文件
+            - name: Build
+              run: npx hexo generate
 
-    # 5. 部署到 main 分支
-    - name: Deploy
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./public
-        publish_branch: main  # 部署的目标分支
+            # 5. 部署到 main 分支
+            - name: Deploy
+              uses: peaceiris/actions-gh-pages@v3
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  publish_dir: ./public
+                  publish_branch: main # 部署的目标分支
 
-        # 如果你绑定了自定义域名（如 example.com），请取消下面这行的注释
-        cname: tech.touchsky.site
+                  # 如果你绑定了自定义域名（如 example.com），请取消下面这行的注释
+                  cname: tech.touchsky.site
 
-        # 记录是谁提交的（可选，让 Commit 记录更好看）
-        user_name: 'github-actions[bot]'
-        user_email: 'github-actions[bot]@users.noreply.github.com'
+                  # 记录是谁提交的（可选，让 Commit 记录更好看）
+                  user_name: "github-actions[bot]"
+                  user_email: "github-actions[bot]@users.noreply.github.com"
