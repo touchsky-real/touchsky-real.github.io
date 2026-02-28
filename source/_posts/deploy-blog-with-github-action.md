@@ -1,14 +1,11 @@
 ---
-title: deploy blog with github action
+title: Hexo 自动化部署：GitHub Actions 终极指南
 tags:
   - Hexo
   - 博客
   - Github action
 date: 2026-03-01 00:53:20
 ---
-
-
-## 标题：Hexo 自动化部署：GitHub Actions 终极指南
 
 ### 1. 为什么选择 GitHub Actions？
 
