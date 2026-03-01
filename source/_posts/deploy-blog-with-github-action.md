@@ -1,9 +1,9 @@
 ---
 title: Hexo 自动化部署：GitHub Actions 终极指南
 tags:
-  - Hexo
-  - 博客
-  - Github action
+    - Hexo
+    - 博客
+    - Github action
 date: 2026-03-01 00:53:20
 ---
 
@@ -44,6 +44,10 @@ on:
     push:
         branches:
             - source
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
     build-and-deploy:
