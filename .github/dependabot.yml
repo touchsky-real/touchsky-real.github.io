@@ -1,7 +1,16 @@
 version: 2
 updates:
-- package-ecosystem: npm
-  directory: "/"
-  schedule:
-    interval: daily
-  open-pull-requests-limit: 20
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    assignees:
+      - "touchsky-real" # 自动指派给你
+
+    allow:
+      - dependency-type: "direct"
+
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
