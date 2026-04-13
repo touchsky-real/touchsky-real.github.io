@@ -1,7 +1,7 @@
 ---
 title: Ubuntu中Python环境的配置
 date: 2026-03-01 00:53:38
-tags:
+tags: python
 ---
 
 ## 准备工作 & 核心原则
